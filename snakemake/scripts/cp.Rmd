@@ -1,0 +1,78 @@
+---
+title: "`r paste0(payloads_sub$type[1], ' - ', stringr::str_trunc(outdir, 25))`"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: paper
+---
+
+```{r setup}
+# TODO add abbreviated input contrast to page name
+# Set knitr options to allow duplicate labels (needed for the subpages)
+options(knitr.duplicate.label = 'allow')
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+
+all_cp = map(split(payloads_sub, 1:nrow(payloads_sub)) %>% unname %>% map(~ c(.x)),
+             ~ do.call(create_subpage_data, list(expr_data = data, sp_info = sp_info, params = .x)))
+
+if(template == "contrast") {
+  set_overview = FALSE
+} else {
+  input_contrast = outdir
+  set_overview = TRUE
+}
+```
+
+# Overview
+
+`r shiny::tags$h1("Overview", style="text-align:left")`
+
+Column {.tabset .tabset-fade data-width=225}
+-----------------------------------------------------------------------
+
+```{r child = 'description.Rmd', eval = T}
+```
+
+Column {data-width=275}
+-----------------------------------------------------------------------
+
+```{r child = 'volcano.Rmd', eval = T}
+```
+
+<!-- conditional evaluation of graph based on whether it's set or contrast --> 
+```{r child = 'venn.Rmd', eval = !set_overview}
+```
+
+```{r child = 'venn.Rmd', eval = set_overview}
+```
+
+Column {data-width=150}
+-----------------------------------------------------------------------
+
+```{r child = 'valuebox_info.Rmd', eval = T}
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+```{r child = 'gene_expr.Rmd', eval = T}
+```
+
+<!-- export patway data to csv --> 
+```{r include = F, eval = T}
+# TODO figure out why the root is in snakemake dir
+csv_path = paste0("../csv/", outdir, "/")
+dir.create(csv_path, showWarnings = F)
+map_if(all_cp,
+       is.not.empty.list,
+       ~ create_pathway_csv(.x, template, csv_path),
+       .else = NULL)
+```
+
+<!-- render subpages with pathway data --> 
+```{r include = F, eval = T}
+out = map_if(all_cp, is.not.empty.list, ~ create_subpage_markdown(.x), .else = "")
+```
+
+`r paste(knitr::knit_child(text = out), collapse = '')`

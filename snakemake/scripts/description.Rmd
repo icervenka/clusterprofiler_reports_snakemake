@@ -1,0 +1,92 @@
+### Report structure
+
+Top left corner contains the name of the analysis performed, followed by this Overview window containing descriptions of the gene list submitted for analysis as well as parameters used.
+Furthermore, there several tabs can be present containing various analysis categories
+
+**By default overrepresentation analysis is reported separately for upregulated, downregulated and all genes in specified gene set. GSEA is only reported for all genes.
+In order to reduce clutter, only the analyses that contain at least one significantly enriched pathway are reported, no entry is added otherwise.**
+
+**Warning: Disease Ontology and ConsensusPathwayDB are only defined for human genes. This script makes use of mapping mouse to human homologues via homologene package. 
+It should be noted that the mappings are not strictly 1:1, therefore same gene can appear several times in results.**
+
+<br>
+
+##### Analysed categories
+
+***
+
+###### Disease
+- Disease Ontology
+- DisGeNET
+- Network of Cancer Gene
+
+###### Gene Ontology
+- Molecular Function
+- Cellular Compartment
+- Biological Process
+
+###### MsigDB
+- Hallmark (H)
+- Curated (C2) - Chemical and Genetic perturbations, Canonical Pathways
+- Regulatory Target Gene Sets (C3) - Transcription Factor Targets
+- Computational Gene Sets (C4) - Cancer Gene Neighborhoods, Cancer Modules
+- Gene Ontology (C5)
+- Cancer (C6)
+- Immunology (C7)
+
+###### MeSH 
+Supports Gendoo (GENe, Disease features Ontology-based Overview system) and gene2pubmed textminig tools in following categories
+
+- Chemicals
+- Diseases
+- Processes
+
+###### ConsensusPathDB
+- PharmGKB     
+- HumanCyc     
+- SMPDB        
+- Signalink    
+- NetPath      
+- EHMN         
+- INOH         
+- BioCarta     
+- PID      
+
+###### Other Pathways
+- KEGG
+- Reactome
+- Wiki pathways
+
+***
+
+###### For more information please see
+
+[clusterProfiler](https://yulab-smu.github.io/clusterProfiler-book/index.html), 
+[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/), 
+[Over representation analysis](https://rmarkdown.rstudio.com/flexdashboard/), 
+[GSEA](https://www.gsea-msigdb.org/gsea/index.jsp), 
+[Gene Ontology](http://geneontology.org/), 
+[MsigDB](https://www.gsea-msigdb.org/gsea/msigdb/index.jsp), 
+[Gendoo](https://gendoo.dbcls.jp/), 
+[Gene2Pubmed](https://pubmed.ncbi.nlm.nih.gov/17148475/),
+[ConsensusPathDB](http://cpdb.molgen.mpg.de/)
+
+
+With comments, questions and bug reports, please contact [icervenka@github.com](mailto:icervenka@github.com)
+
+### Result description
+
+This visualization package makes use of clusterProfiler and flexdashboard markdown with widgets to generate reports on pathway analysis for gene expression data. Pathways analysis is split into several standalone html reports.
+Two types of pathway analysis are offered under clusterProfiler package: Over-representation analysis (ORA) and Gene Set Enrichment Analysis (GSEA)
+
+<br>
+
+##### Over-representation analysis (ORA)
+Is widely used to determine if particular gene set of interest (usually derived from differential expression analysis) is statistically enriched in set of genes representing particular biological function. It compares their overlap with regard to the number of genes in each. This type of analysis usually doesn’t consider the directionality of the expression changes, only their presence among the genes of pathway of interest. Therefore, it’s not possible to determine the changes in the directionality of pathway. In order to identify the most relevant pathways, a cutoff on both p-value and log2(fold-change) is usually used to filter out genes non-significant and unchanged genes respectively to decrease the noise.
+It is possible to divide the genes in your gene list of interest into up- and downregulated subgroups and run overrepresentation analysis on them separately. This is the default behavior of this visualization tool, however care should be taken when interpreting the results, since changes in specific biological pathway are usually accompanied by both increases and decreases of expression of particular genes at the same time.
+
+<br>
+
+##### Gene Set Enrichment Analysis (GSEA)
+Another common approach to analyze changes in gene expression profiles. Compared to overrepresentation analysis, this approach will discover situations where differences of expression are very small but are coordinately present in many genes of a particular pathway. GSEA uses list of all genes in the analysis, not only the differentially expressed ones and ranks them by importance based on p-value and directionality of fold-change. 
+

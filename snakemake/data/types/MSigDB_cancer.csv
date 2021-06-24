@@ -1,0 +1,4 @@
+type,category,heading,flavour_text
+MSigDB_cancer,C6,Oncogenic,
+MSigDB_cancer,C4@CGN,Cancer Gene Neighborhoods,
+MSigDB_cancer,C4@CM,Cancer Modules,

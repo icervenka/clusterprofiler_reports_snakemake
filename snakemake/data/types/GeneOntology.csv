@@ -1,0 +1,4 @@
+type,category,heading,flavour_text
+GeneOntology,MF,Molecular Function,
+GeneOntology,CC,Cellular Compartment,
+GeneOntology,BP,Biological Process,

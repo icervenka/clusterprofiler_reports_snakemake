@@ -1,0 +1,63 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+
+description: snakemake configuration file
+
+type: object
+
+properties:
+  metadata:
+    type: string
+
+  species:
+    type: string
+
+  threads:
+    type: integer
+
+  clusterProfiler:
+    type: object
+    properties:
+      self_contained:
+        type: boolean
+      types:
+        type: object
+      id_column_name:
+        type: string
+      fc_column_name:
+        type: string
+      padj_column_name:
+        type: string
+      pvalue_column_name:
+        type: string
+      gene_fc_threshold:
+        type: string
+      gene_padj_threshold:
+        type: string
+      enrich_minGS:
+        type: string
+      enrich_maxGS:
+        type: string
+      enrich_pval_cutoff:
+        type: string
+      gse_nperm:
+        type: string
+      gse_minGS:
+        type: string
+      gse_maxGS:
+        type: string
+      enrich_pval_cutoff:
+        type: string
+      enrich_pval_cutoff:
+        type: string
+      enrich_pval_cutoff:
+        type: string
+
+required:
+  - experiment_name
+  - metadata
+  - index
+  - gtf
+  - threads
+  - count
+  - diffexp
+  - report

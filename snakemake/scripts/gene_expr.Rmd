@@ -1,0 +1,28 @@
+### Gene expression table
+
+```{r}
+table_expr_data = data 
+
+if((payloads_sub$type[1] %in% c("Disease", "ConsensusPathDB")) && (sp_info['common'] != "human")) {
+  table_expr_data = table_expr_data %>%
+    add_human_ids(sp_info)
+  select_symbol = "SYMBOL_HUMAN"
+} else {
+  select_symbol = "SYMBOL"
+}
+
+if(template == "contrast") {
+  genes_in_pathways = all_cp %>%
+    map_if(is.not.empty.list, ~ get_genes(.x$df), .else = list()) %>%
+    flatten_chr %>%
+    unique
+
+  table_expr_data = table_expr_data %>%
+    dplyr::filter(!!as.symbol(select_symbol) %in% genes_in_pathways)
+} 
+
+table_expr_data %>%
+  format_gene_expr_dt(sp_info) %>% 
+  default_dt %>%
+  formatRound(columns = c(4:6), digits=5, mark = "")
+```

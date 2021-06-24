@@ -1,0 +1,4 @@
+type,category,heading,flavour_text
+Disease,DO,Disease Ontology,
+Disease,NCG,Network of Cancer Gene,
+Disease,DGN,DisGeNET,

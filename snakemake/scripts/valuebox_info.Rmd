@@ -1,0 +1,46 @@
+### Performed analyses
+
+```{r}
+valueBox(paste(get_template(template)$analyses, collapse = ", "))
+```
+
+### ORA - Analysed Genes
+
+```{r}
+valueBox(filter_data(data,
+                     padj_column = padj_column_name,
+                     padj_threshold = gene_padj_threshold, 
+                     fc_column = fc_column_name,
+                     fc_threshold = gene_fc_threshold) 
+         %>% nrow)
+```
+
+### ORA - Adjusted p-value threshold
+
+```{r}
+valueBox(gene_padj_threshold, color = "warning")
+```
+
+### ORA - log2(fold-change) threshold
+
+```{r}
+valueBox(gene_fc_threshold, color = "warning")
+```
+
+### ORA parameters (min genes in pathway, max genes in pathway, p-value cutoff)
+
+```{r}
+valueBox(paste(enrich_minGS, enrich_maxGS, enrich_pval_cutoff,  sep = ", "), color = "success")
+```
+
+### GSEA parameters (min genes in pathway, max genes in pathway, p-value cutoff)
+
+```{r}
+valueBox(paste(gse_minGS, gse_maxGS, gse_pval_cutoff, sep = ", "), color = "success")
+```
+
+### Upset - minimum genes in set
+
+```{r}
+valueBox(min_set_size, color = "success")
+```
