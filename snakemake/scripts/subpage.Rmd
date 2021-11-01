@@ -22,7 +22,7 @@ hide_table_cols = (match(hide_columns, names(pathway_table)) %>% na.omit) - 1
 
 # TODO sometimes truncated version has same name after
 subpage_df_trunc = subpage_df %>%
- clusterProfiler.dplyr::mutate(Description = stringr::str_trunc(Description, 43))
+ clusterProfiler::mutate(Description = stringr::str_trunc(Description, 43))
 ```
 
 Column {data-width=250}

@@ -20,7 +20,7 @@ clusterProfiler:
     - "Pathways"
     - "ConsensusPathDB"
   # name of the gene ID column in the deg file
-  id_column_name: "ensembl_gene_id"
+  id_column_name: "ENSEMBL"
   # type of ID column in the deg file
   # Can be one of supported by org.db
   id_type: "ENSEMBL"

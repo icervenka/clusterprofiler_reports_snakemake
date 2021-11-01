@@ -6,6 +6,8 @@ suppressMessages(library(msigdbr))
 suppressMessages(library(meshes))
 suppressMessages(library(MeSH.Hsa.eg.db))
 suppressMessages(library(MeSH.Mmu.eg.db))
+suppressMessages(library(org.Hs.eg.db))
+suppressMessages(library(org.Mm.eg.db))
 # suppressMessages(library(MeSH.Rno.eg.db))
 
 # analysis functions  ----------------------------------------------------------------------------------
@@ -141,7 +143,7 @@ enrichGO_wrapper = function(list, category, species) {
   df = enrichGO(
     gene          = names(list),
     ont           = category,
-    OrgDb         = species["orgdb"],
+    OrgDb         = eval(parse(text = species[["orgdb"]])),
     pvalueCutoff  = enrich_pval_cutoff,
     pAdjustMethod = "BH",
     minGSSize     = enrich_minGS,
@@ -157,9 +159,9 @@ enrichGO_wrapper = function(list, category, species) {
 gseaGO_wrapper = function(list, category, species) {
   df = gseGO(
     geneList     = list,
-    OrgDb        = species["orgdb"],
+    OrgDb        = eval(parse(text = species[["orgdb"]])),
     ont          = category,
-    nPerm         = gse_nperm,
+    #nPerm         = gse_nperm,
     pvalueCutoff  = gse_pval_cutoff,
     minGSSize     = gse_minGS,
     maxGSSize     = gse_maxGS,
@@ -243,7 +245,7 @@ enrichPathways_wrapper = function(list, category, species) {
   
   enrichReactome_wrapper = function(list, category, species) {
     df = enrichPathway(gene           = names(list), 
-                       organism      = species['common'],
+                       organism      = species[['common']],
                        pvalueCutoff  = enrich_pval_cutoff,
                        pAdjustMethod = "BH",
                        minGSSize     = enrich_minGS,
@@ -253,10 +255,10 @@ enrichPathways_wrapper = function(list, category, species) {
   
   enrichWiki_wrapper = function(list, category, species) {
     suppressMessages(library(rWikiPathways))
-    wiki_archive = downloadPathwayArchive(organism=species['full_name'], format="gmt")
+    wiki_archive = downloadPathwayArchive(organism=species[['full_name']], format="gmt")
     wp2gene = read.gmt(wiki_archive)
     if(file.exists(wiki_archive)) { file.remove(wiki_archive) }
-    wp2gene = wp2gene %>% tidyr::separate(ont, c("name","version","wpid","org"), "%")
+    wp2gene = wp2gene %>% tidyr::separate(term, c("name","version","wpid","org"), "%")
     wpid2gene = wp2gene %>% dplyr::select(wpid, gene) #TERM2GENE
     wpid2name = wp2gene %>% dplyr::select(wpid, name) #TERM2NAME
     
@@ -328,7 +330,7 @@ gseaPathways_wrapper = function(list, category, species) {
     wiki_archive = downloadPathwayArchive(organism=species['full_name'], format="gmt")
     wp2gene = read.gmt(wiki_archive)
     if(file.exists(wiki_archive)) { file.remove(wiki_archive) }
-    wp2gene = wp2gene %>% tidyr::separate(ont, c("name","version","wpid","org"), "%")
+    wp2gene = wp2gene %>% tidyr::separate(term, c("name","version","wpid","org"), "%")
     wpid2gene = wp2gene %>% dplyr::select(wpid, gene) #TERM2GENE
     wpid2name = wp2gene %>% dplyr::select(wpid, name) #TERM2NAME
     

@@ -19,7 +19,7 @@ rule all:
     input:
         expand(REPORT_OUTDIR +  "{contrast}/{type}_{template}.html",
             contrast = Metadata.contrast, type = types, template = ['contrast', 'unique']),
-        dynamic(expand(REPORT_OUTDIR + "{{contrast}}/{type}_multi.html", type = types)),
+        # dynamic(expand(REPORT_OUTDIR + "{{contrast}}/{type}_multi.html", type = types)),
         REPORT_OUTDIR + "analysis_params/config.yaml",
         REPORT_OUTDIR + "analysis_params/metadata.tsv"
 

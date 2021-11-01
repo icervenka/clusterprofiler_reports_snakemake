@@ -1,5 +1,2 @@
 contrast	file
-Rel1d	DEG_1d_Rel.txt
-Rel3d	DEG_3d_Rel.txt
-Sus3d	DEG_3d_Sus.txt
-Sus7d	DEG_7d_Sus.txt
+ko_wt	ko_vs_wt_all.txt
