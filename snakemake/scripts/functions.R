@@ -1,13 +1,13 @@
 # imports -------------------------------------------------------------------------------
-suppressMessages(library(networkD3))
-suppressMessages(library(scales))
-suppressMessages(library(clusterProfiler))
-suppressMessages(library(biomaRt))
-suppressMessages(library(ComplexHeatmap))
-suppressMessages(library(DT))
-suppressMessages(library(viridis))
-suppressMessages(library(RColorBrewer))
-suppressMessages(library(tidyverse))
+suppressPackageStartupMessages(library(networkD3))
+suppressPackageStartupMessages(library(scales))
+suppressPackageStartupMessages(library(clusterProfiler))
+suppressPackageStartupMessages(library(biomaRt))
+suppressPackageStartupMessages(library(ComplexHeatmap))
+suppressPackageStartupMessages(library(DT))
+suppressPackageStartupMessages(library(viridis))
+suppressPackageStartupMessages(library(RColorBrewer))
+suppressPackageStartupMessages(library(tidyverse))
 
 # DESeq related functions -------------------------------------------------------------
 modify_tilda = function(x, add = T) {
@@ -82,7 +82,7 @@ translate_gene_ids = function(gene_ids, sp_info, from_type, to_type = c("ENTREZI
   } else if(method == "biomart") {
     
     # TODO default to_type
-    suppressMessages(library(biomaRt))
+    suppressPackageStartupMessages(library(biomaRt))
     mart = useMart('ensembl', paste0(sp_info[["abbreviation"]], '_gene_ensembl'))
     ids = getBM(filters = "ensembl_gene_id", 
                 attributes = c("entrezgene_id", "ensembl_gene_id", paste0(sp_info[["symbol"]], '_symbol')), 
@@ -101,7 +101,7 @@ translate_gene_ids = function(gene_ids, sp_info, from_type, to_type = c("ENTREZI
 
 # TODO add rat IDs
 add_human_ids = function(ids, species) {
-  suppressMessages(library(homologene))
+  suppressPackageStartupMessages(library(homologene))
   if(species['common'] == "mouse") {
     genes = ids[["ENTREZID"]]
     m2h = mouse2human(genes, db = homologeneData2) %>%

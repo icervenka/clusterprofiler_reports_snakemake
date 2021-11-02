@@ -1,14 +1,14 @@
-suppressMessages(library(clusterProfiler))
-suppressMessages(library(DOSE))
-suppressMessages(library(enrichplot))
-suppressMessages(library(ReactomePA))
-suppressMessages(library(msigdbr))
-suppressMessages(library(meshes))
-suppressMessages(library(MeSH.Hsa.eg.db))
-suppressMessages(library(MeSH.Mmu.eg.db))
-suppressMessages(library(org.Hs.eg.db))
-suppressMessages(library(org.Mm.eg.db))
-# suppressMessages(library(MeSH.Rno.eg.db))
+suppressPackageStartupMessages(library(clusterProfiler))
+suppressPackageStartupMessages(library(DOSE))
+suppressPackageStartupMessages(library(enrichplot))
+suppressPackageStartupMessages(library(ReactomePA))
+suppressPackageStartupMessages(library(msigdbr))
+suppressPackageStartupMessages(library(meshes))
+suppressPackageStartupMessages(library(MeSH.Hsa.eg.db))
+suppressPackageStartupMessages(library(MeSH.Mmu.eg.db))
+suppressPackageStartupMessages(library(org.Hs.eg.db))
+suppressPackageStartupMessages(library(org.Mm.eg.db))
+# suppressPackageStartupMessages(library(MeSH.Rno.eg.db))
 
 # analysis functions  ----------------------------------------------------------------------------------
 get_wrapper = function(type, analysis) {
@@ -254,7 +254,7 @@ enrichPathways_wrapper = function(list, category, species) {
   }
   
   enrichWiki_wrapper = function(list, category, species) {
-    suppressMessages(library(rWikiPathways))
+    suppressPackageStartupMessages(library(rWikiPathways))
     wiki_archive = downloadPathwayArchive(organism=species[['full_name']], format="gmt")
     wp2gene = read.gmt(wiki_archive)
     if(file.exists(wiki_archive)) { file.remove(wiki_archive) }
@@ -326,7 +326,7 @@ gseaPathways_wrapper = function(list, category, species) {
   }
   
   gseaWiki_wrapper = function(list, category, species) {
-    suppressMessages(library(rWikiPathways))
+    suppressPackageStartupMessages(library(rWikiPathways))
     wiki_archive = downloadPathwayArchive(organism=species['full_name'], format="gmt")
     wp2gene = read.gmt(wiki_archive)
     if(file.exists(wiki_archive)) { file.remove(wiki_archive) }

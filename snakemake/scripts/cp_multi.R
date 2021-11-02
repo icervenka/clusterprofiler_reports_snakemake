@@ -3,13 +3,13 @@
 # TODO this should not be executed when there is only one contrast
 
 # imports ----------------------------------------------------------------------------------
-suppressMessages(library(rmarkdown))
-suppressMessages(library(htmltools))
-suppressMessages(library(flexdashboard))
-suppressMessages(library(DT))
-suppressMessages(library(plotly))
-suppressMessages(library(ComplexHeatmap))
-suppressMessages(library(tidyverse))
+suppressPackageStartupMessages(library(rmarkdown))
+suppressPackageStartupMessages(library(htmltools))
+suppressPackageStartupMessages(library(flexdashboard))
+suppressPackageStartupMessages(library(DT))
+suppressPackageStartupMessages(library(plotly))
+suppressPackageStartupMessages(library(ComplexHeatmap))
+suppressPackageStartupMessages(library(tidyverse))
 
 source("snakemake/scripts/functions.R")
 source("snakemake/scripts/wrappers.R")
@@ -20,7 +20,7 @@ data_basepath = "snakemake/data/"
 cpdb = read.table(paste0(data_basepath, "CPDB_pathways_genes.tab"), sep = '\t', header = T, stringsAsFactors = F)
 
 # snakemake parameters ---------------------------------------------------------------------
-source("snakemake/scripts/common_params.R")
+source("snakemake/scripts/load_params.R")
 
 # snakemake inputs --------------------------------------------------------------------------
 input_type = snakemake@input[['type']]
@@ -42,21 +42,16 @@ unique_multi_payloads = merge(read.csv(input_type, stringsAsFactors = F),
 
 map(upset_sets$set_name, function(input_contrast) {
   multi_data = get_unique_expr_data(all_data, input_contrast, min_set_size = min_set_size)
-  
+
   knitr_output_options = list(
     mathjax = NULL,
     highlight = NULL,
     self_contained = self_contained,
     lib_dir = paste0("../../", output_dir, input_contrast, "/_libs")
   )
-  
+
   if(nrow(multi_data) > 0) {
     dir.create(paste0("reports/", input_contrast), showWarnings = F)
     run_cp(multi_data, get_species_info(species), unique_multi_payloads, template, input_contrast, output_opts = knitr_output_options)
   }
 })
-
-
-
-
-

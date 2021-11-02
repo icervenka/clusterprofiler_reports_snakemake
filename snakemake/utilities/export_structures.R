@@ -1,3 +1,14 @@
+#!/usr/bin/Rscript
+### List type enumeration of analyses to be performed that can be exported as csv
+### files to be read by clusterProfiler report script
+
+export_structures = function(s, path) {
+  df = map_dfr(s, function(x) as.data.frame(x, stringsAsFactors = F))
+  map(df$type %>% unique, function(x) {
+    write.csv(df %>% dplyr::filter(type == x), paste0(path, x,".csv"), quote = F, row.names = F)
+  })
+}
+
 # next iteration
 # TODO add pathfinder
 # TODO add pathifier
@@ -169,7 +180,7 @@ analysis_structure = list(
   #   "category" = "Uniprot",
   #   "heading" = "Uniprot keywords",
   #   "flavour_text" = ""
-  # ),                                              
+  # ),
   list(
     "type" = "ConsensusPathDB",
     "category" = "PharmGKB",
@@ -226,10 +237,12 @@ analysis_structure = list(
   )
 )
 
-export_structure = function(s, path) {
-  df = map_dfr(s, function(x) as.data.frame(x, stringsAsFactors = F))
-  map(df$type %>% unique, function(x) {
-    write.csv(df %>% dplyr::filter(type == x), paste0(path, x,".csv"), quote = F, row.names = F)
-  })
+args = commandArgs(trailingOnly=TRUE)
+
+if (length(args) == 0) {
+  stop("The export path of the structures has to be specified as an argument.", call.=FALSE)
+} elif (length(args) > 1) {
+  stop("Too many commandline arguments specified.", call.=FALSE)
 }
 
+export_structures(analysis_structure, args[1])

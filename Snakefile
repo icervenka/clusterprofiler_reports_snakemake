@@ -17,8 +17,9 @@ types = config["clusterProfiler"]["types"]
 
 rule all:
     input:
-        expand(REPORT_OUTDIR +  "{contrast}/{type}_{template}.html",
-            contrast = Metadata.contrast, type = types, template = ['contrast', 'unique']),
+        # expand(REPORT_OUTDIR +  "{contrast}/{type}_{template}.html",
+        #     contrast = Metadata.contrast, type = types, template = ['contrast', 'unique']),
+        get_cp_output_files,
         # dynamic(expand(REPORT_OUTDIR + "{{contrast}}/{type}_multi.html", type = types)),
         REPORT_OUTDIR + "analysis_params/config.yaml",
         REPORT_OUTDIR + "analysis_params/metadata.tsv"
