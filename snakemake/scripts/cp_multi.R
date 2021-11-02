@@ -1,7 +1,5 @@
 #!/usr/bin/Rscript
 
-# TODO this should not be executed when there is only one contrast
-
 # imports ----------------------------------------------------------------------------------
 suppressPackageStartupMessages(library(rmarkdown))
 suppressPackageStartupMessages(library(htmltools))
@@ -13,11 +11,6 @@ suppressPackageStartupMessages(library(tidyverse))
 
 source("snakemake/scripts/functions.R")
 source("snakemake/scripts/wrappers.R")
-
-# global variables -------------------------------------------------------------------------
-# scripts_basepath = "snakemaka/scripts"
-data_basepath = "snakemake/data/"
-cpdb = read.table(paste0(data_basepath, "CPDB_pathways_genes.tab"), sep = '\t', header = T, stringsAsFactors = F)
 
 # snakemake parameters ---------------------------------------------------------------------
 source("snakemake/scripts/load_params.R")

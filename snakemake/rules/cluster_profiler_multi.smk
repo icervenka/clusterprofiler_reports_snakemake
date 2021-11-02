@@ -1,10 +1,13 @@
+def get_cp_multi_output_files(wildcards):
+    return dynamic(expand(REPORT_OUTDIR + "{{contrast}}/{type}_multi.html", type = types))
+
 rule cp_multi:
     input:
         type=TYPES_DIR + "{type}.csv"
     output:
         dynamic(REPORT_OUTDIR + "{contrast}/{type}" + "_multi.html"),
     params:
-        input_dir = INPUT_DIR,
+        input_dir=INPUT_DIR,
         output_dir=REPORT_OUTDIR,
         metadata=config['metadata'],
         species=config["species"],

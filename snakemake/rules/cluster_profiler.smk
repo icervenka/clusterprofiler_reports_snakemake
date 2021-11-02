@@ -1,8 +1,8 @@
-# TODO figure out a way to share parameters between rules
 # TODO export csv with pathways/genes with fc in long format
+
 def get_cp_output_files(wildcards):
-    expand(REPORT_OUTDIR +  "{contrast}/{type}_{template}.html",
-        contrast = Metadata.contrast, type = types, template = ['contrast', 'unique'])
+    return expand(REPORT_OUTDIR + "{contrast}/{type}_{template}.html",
+        contrast = Metadata.contrast, type = types, template = templates)
 
 rule cp:
     input:
@@ -10,8 +10,7 @@ rule cp:
         type=TYPES_DIR + "{type}.csv"
     output:
         expand(REPORT_OUTDIR + "{{contrast}}/{{type}}_{template}.html",
-            template = ['contrast', 'unique'])
-        #REPORT_OUTDIR + "{contrast}/{type}_unique.html",
+            template = templates)
     params:
         contrast=get_contrast,
         input_dir=INPUT_DIR,
@@ -44,10 +43,10 @@ rule cp:
 
 rule copy_config:
     input:
-        config = "config.yaml",
-        metadata = "metadata.tsv"
+        config="config.yaml",
+        metadata="metadata.tsv"
     output:
-        config = REPORT_OUTDIR + "analysis_params/config.yaml",
-        metadata = REPORT_OUTDIR + "analysis_params/metadata.tsv"
+        config=OUTPUT_DIR + "analysis_params/config.yaml",
+        metadata=OUTPUT_DIR + "analysis_params/metadata.tsv"
     shell:
         "cp {input.config} {output.config}; cp {input.metadata} {output.metadata}"

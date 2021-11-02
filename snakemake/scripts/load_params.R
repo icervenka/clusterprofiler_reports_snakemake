@@ -1,12 +1,13 @@
 # global variables -------------------------------------------------------------------------
 # scripts_basepath = "snakemaka/scripts"
 data_basepath = "snakemake/data/"
-cpdb = read.table(paste0(data_basepath, "CPDB_pathways_genes.tab"), 
-                  sep = '\t', 
-                  header = T, 
+cpdb = read.table(paste0(data_basepath, "CPDB_pathways_genes.tab"),
+                  sep = '\t',
+                  header = T,
                   stringsAsFactors = F)
 
 # snakemake common parameters ------------------------------------------
+input_contrast = snakemake@params[['contrast']]
 input_dir = snakemake@params[['input_dir']]
 output_dir = snakemake@params['output_dir']
 metadata = snakemake@params[['metadata']]

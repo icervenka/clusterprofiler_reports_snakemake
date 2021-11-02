@@ -13,18 +13,25 @@ configfile: "config.yaml"
 
 Metadata = pd.read_table(config["metadata"])
 types = config["clusterProfiler"]["types"]
+if len(pd.unique(Metadata.contrast))) == 1:
+    templates = ['contrast']
+else:
+    templates = ['contrast', 'unique']
 # validate(Metadata, schema="snakemake/schema/metadata.schema.yaml")
 
 rule all:
     input:
-        # expand(REPORT_OUTDIR +  "{contrast}/{type}_{template}.html",
-        #     contrast = Metadata.contrast, type = types, template = ['contrast', 'unique']),
         get_cp_output_files,
-        # dynamic(expand(REPORT_OUTDIR + "{{contrast}}/{type}_multi.html", type = types)),
-        REPORT_OUTDIR + "analysis_params/config.yaml",
-        REPORT_OUTDIR + "analysis_params/metadata.tsv"
+        get_cp_multi_output_files,
+        get_result_archive_output_files,
+        OUTPUT_DIR + "analysis_params/config.yaml",
+        OUTPUT_DIR + "analysis_params/metadata.tsv"
 
 include: "snakemake/rules/cluster_profiler.smk"
 
-if len(Metadata.contrast) > 1:
+if len(pd.unique(Metadata.contrast))) > 1:
     include: "snakemake/rules/cluster_profiler_multi.smk"
+else:
+    include: "snakemake/rules/skip_cluster_profiler_multi.smk"
+
+include: "snakemake/rules/result_archive.smk"

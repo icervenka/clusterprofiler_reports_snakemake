@@ -11,17 +11,16 @@ suppressPackageStartupMessages(library(tidyverse))
 source("snakemake/scripts/functions.R")
 source("snakemake/scripts/wrappers.R")
 
-# snakemake parameters ---------------------------------------------------------------------
+# snakemake parameters ---------------------------------------------------------
 source("snakemake/scripts/load_params.R")
 
-# snakemake inputs -------------------------------------------------------------------------
+# snakemake inputs -------------------------------------------------------------
 input_file = snakemake@input[['file']]
 input_type = snakemake@input[['type']]
-input_contrast = snakemake@params[['contrast']]
 
 dir.create("csv", showWarnings = F)
 
-# load data and metadata -------------------------------------------------------------------
+# load data and metadata -------------------------------------------------------
 meta = read.table(metadata, header = T, stringsAsFactors = F)
 
 data = input_file %>%
@@ -37,17 +36,20 @@ knitr_output_options = list(
   lib_dir = paste0("../../", output_dir, input_contrast, "/_libs")
 )
 
-# run analysis ------------------------------------------------------------------------------
+# run analysis -----------------------------------------------------------------
 template = "contrast"
 payloads = merge(read.csv(input_type, stringsAsFactors = F),
                  template_to_df(get_template(template)))
 
 run_cp(data, get_species_info(species), payloads, template, input_contrast, output_opts = knitr_output_options)
 
-# run analysis upset unique set -------------------------------------------------------------
-template = "unique"
-payloads = merge(read.csv(input_type, stringsAsFactors = F),
-                 template_to_df(get_template(template)))
+# run analysis upset unique set ------------------------------------------------
+# only run if there is more than one contrast
+if(length(meta$contrast %>% unique) > 1) {
+  template = "unique"
+  payloads = merge(read.csv(input_type, stringsAsFactors = F),
+                   template_to_df(get_template(template)))
 
-unique_data = get_unique_expr_data(all_data, input_contrast, min_set_size = min_set_size)
-run_cp(unique_data, get_species_info(species), payloads, template, input_contrast, output_opts = knitr_output_options)
+  unique_data = get_unique_expr_data(all_data, input_contrast, min_set_size = min_set_size)
+  run_cp(unique_data, get_species_info(species), payloads, template, input_contrast, output_opts = knitr_output_options)
+}
