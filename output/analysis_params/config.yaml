@@ -11,13 +11,13 @@ clusterProfiler:
   # Disease, GeneOntology, MSigDB, MSigDB_cancer, MeSH_g2p, MeSH_gendoo,
   # Pathways, ConsensusPathDB
   types:
-    - "Disease"
-    - "GeneOntology"
-    - "MSigDB"
-    - "MSigDB_cancer"
-    - "MeSH_g2p"
-    - "MeSH_gendoo"
-    - "Pathways"
+    # - "Disease"
+    # - "GeneOntology"
+    # - "MSigDB"
+    # - "MSigDB_cancer"
+    # - "MeSH_g2p"
+    # - "MeSH_gendoo"
+    # - "Pathways"
     - "ConsensusPathDB"
   # name of the gene ID column in the deg file
   id_column_name: "ENSEMBL"

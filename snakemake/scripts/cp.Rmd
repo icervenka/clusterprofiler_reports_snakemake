@@ -1,6 +1,6 @@
 ---
 title: "`r paste0(payloads_sub$type[1], ' - ', stringr::str_trunc(outdir, 25))`"
-output: 
+output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
@@ -40,7 +40,7 @@ Column {data-width=275}
 ```{r child = 'volcano.Rmd', eval = T}
 ```
 
-<!-- conditional evaluation of graph based on whether it's set or contrast --> 
+<!-- conditional evaluation of graph based on whether it's set or contrast -->
 ```{r child = 'venn.Rmd', eval = !set_overview}
 ```
 
@@ -59,10 +59,10 @@ Column {data-width=350}
 ```{r child = 'gene_expr.Rmd', eval = T}
 ```
 
-<!-- export patway data to csv --> 
+<!-- export pathway data to csv -->
 ```{r include = F, eval = T}
 # TODO figure out why the root is in snakemake dir
-csv_path = paste0("../csv/", outdir, "/")
+csv_path = paste0("../", csv_outdir, outdir, "/")
 dir.create(csv_path, showWarnings = F)
 map_if(all_cp,
        is.not.empty.list,
@@ -70,7 +70,7 @@ map_if(all_cp,
        .else = NULL)
 ```
 
-<!-- render subpages with pathway data --> 
+<!-- render subpages with pathway data -->
 ```{r include = F, eval = T}
 out = map_if(all_cp, is.not.empty.list, ~ create_subpage_markdown(.x), .else = "")
 ```

@@ -8,7 +8,8 @@ rule cp_multi:
         dynamic(REPORT_OUTDIR + "{contrast}/{type}" + "_multi.html"),
     params:
         input_dir=INPUT_DIR,
-        output_dir=REPORT_OUTDIR,
+        report_outdir=REPORT_OUTDIR,
+        csv_outdir=CSV_OUTDIR,
         metadata=config['metadata'],
         species=config["species"],
         self_contained=config["clusterProfiler"]["self_contained"],

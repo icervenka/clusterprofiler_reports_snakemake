@@ -18,8 +18,6 @@ source("snakemake/scripts/load_params.R")
 input_file = snakemake@input[['file']]
 input_type = snakemake@input[['type']]
 
-dir.create("csv", showWarnings = F)
-
 # load data and metadata -------------------------------------------------------
 meta = read.table(metadata, header = T, stringsAsFactors = F)
 
@@ -33,7 +31,7 @@ all_data = paste0(snakemake@params[['input_dir']], meta$file) %>%
 knitr_output_options = list(
   mathjax = NULL,
   self_contained = self_contained,
-  lib_dir = paste0("../../", output_dir, input_contrast, "/_libs")
+  lib_dir = paste0("../../", report_outdir, input_contrast, "/_libs")
 )
 
 # run analysis -----------------------------------------------------------------

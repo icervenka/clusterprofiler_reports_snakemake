@@ -633,7 +633,7 @@ run_cp = function(data, sp_info, payloads, template, outdir, output_opts = list(
     render("snakemake/scripts/cp.Rmd",
            output_file = paste0(x, "_",  template, ".html"),
            output_format = "all",
-           output_dir = paste0(output_dir, outdir),
+           output_dir = paste0(report_outdir, outdir),
            output_options = output_opts)
   }, data = data, sp_info = sp_info)
 }

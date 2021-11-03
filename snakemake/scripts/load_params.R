@@ -9,7 +9,8 @@ cpdb = read.table(paste0(data_basepath, "CPDB_pathways_genes.tab"),
 # snakemake common parameters ------------------------------------------
 input_contrast = snakemake@params[['contrast']]
 input_dir = snakemake@params[['input_dir']]
-output_dir = snakemake@params['output_dir']
+report_outdir = snakemake@params['report_outdir']
+csv_outdir = snakemake@params['csv_outdir']
 metadata = snakemake@params[['metadata']]
 species = snakemake@params[['species']]
 self_contained = snakemake@params[["self_contained"]]

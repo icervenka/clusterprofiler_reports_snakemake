@@ -40,7 +40,7 @@ map(upset_sets$set_name, function(input_contrast) {
     mathjax = NULL,
     highlight = NULL,
     self_contained = self_contained,
-    lib_dir = paste0("../../", output_dir, input_contrast, "/_libs")
+    lib_dir = paste0("../../", report_outdir, input_contrast, "/_libs")
   )
 
   if(nrow(multi_data) > 0) {

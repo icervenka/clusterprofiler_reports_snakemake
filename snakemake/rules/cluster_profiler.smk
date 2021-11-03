@@ -4,6 +4,13 @@ def get_cp_output_files(wildcards):
     return expand(REPORT_OUTDIR + "{contrast}/{type}_{template}.html",
         contrast = Metadata.contrast, type = types, template = templates)
 
+rule create_csv_output_dir:
+    input:
+    output:
+        directory(CSV_OUTDIR)
+    shell:
+        "mkdir {output}"
+
 rule cp:
     input:
         file=get_file,
@@ -14,7 +21,8 @@ rule cp:
     params:
         contrast=get_contrast,
         input_dir=INPUT_DIR,
-        output_dir=REPORT_OUTDIR,
+        report_outdir=REPORT_OUTDIR,
+        csv_outdir=CSV_OUTDIR,
         metadata=config['metadata'],
         species=config["species"],
         self_contained=config["clusterProfiler"]["self_contained"],
