@@ -41,18 +41,24 @@ load_data = function(filepath, sp_info, ...) {
   return(data)
 }
 
-add_idcolnames = function(d, sp_info, id_column_name = "ENSEMBL", id_type = "ENSEMBL", required_colnames = c("ENTREZID", "ENSEMBL", "SYMBOL", "GENENAME")) {
+add_idcolnames = function(d,
+                          sp_info,
+                          id_column_name = "ENSEMBL",
+                          id_type = "ENSEMBL",
+                          required_colnames = c("ENTREZID", "ENSEMBL", "SYMBOL", "GENENAME")) {
   d = d %>% dplyr::rename(!!id_type := all_of(id_column_name))
   data_colnames = names(d)
 
   columns_in = required_colnames %in% data_colnames
 
-  if(!any(columns_in)) {
-    stop(paste0("No ID types present in the file. Has to be one of:\n",
-                paste(required_colnames, collapse = " ")))
+  if (!any(columns_in)) {
+    stop(paste0(
+      "No ID types present in the file. Has to be one of:\n",
+      paste(required_colnames, collapse = " ")
+    ))
   }
 
-  if(!all(columns_in)) {
+  if (!all(columns_in)) {
     id_column = required_colnames[columns_in][1]
     ids = translate_gene_ids(d[, id_column], sp_info, id_column, to_type = c(required_colnames))
     # TODO remove duplicates
@@ -64,13 +70,20 @@ add_idcolnames = function(d, sp_info, id_column_name = "ENSEMBL", id_type = "ENS
   }
 }
 
-translate_gene_ids = function(gene_ids, sp_info, from_type, to_type = c("ENTREZID", "ENSEMBL", "SYMBOL", "GENENAME"), method = "bitr", drop = TRUE) {
-  if(method == "bitr") {
-    ids = suppressMessages(bitr(gene_ids,
-                                fromType=from_type,
-                                toType=to_type,
-                                OrgDb=sp_info["orgdb"],
-                                drop = drop))
+translate_gene_ids = function(gene_ids,
+                              sp_info,
+                              from_type,
+                              to_type = c("ENTREZID", "ENSEMBL", "SYMBOL", "GENENAME"),
+                              method = "bitr",
+                              drop = TRUE) {
+  if (method == "bitr") {
+    ids = suppressMessages(bitr(
+      gene_ids,
+      fromType = from_type,
+      toType = to_type,
+      OrgDb = sp_info["orgdb"],
+      drop = drop
+    ))
     #   mutate(ENTREZID = as.numeric(ENTREZID)) %>%
     #   group_by(ENTREZID) %>%
     #   arrange(ENTREZID) %>%
@@ -78,21 +91,26 @@ translate_gene_ids = function(gene_ids, sp_info, from_type, to_type = c("ENTREZI
     #   ungroup
 
     # TODO needs to be changed, depending on the starting id, produces duplicates
-    ids = ids[!duplicated(ids$ENSEMBL), ]
-  } else if(method == "biomart") {
-
+    ids = ids[!duplicated(ids$ENSEMBL),]
+  } else if (method == "biomart") {
     # TODO default to_type
     suppressPackageStartupMessages(library(biomaRt))
     mart = useMart('ensembl', paste0(sp_info[["abbreviation"]], '_gene_ensembl'))
-    ids = getBM(filters = "ensembl_gene_id",
-                attributes = c("entrezgene_id", "ensembl_gene_id", paste0(sp_info[["symbol"]], '_symbol')),
-                values = gene_ids,
-                mart = mart) %>%
+    ids = getBM(
+      filters = "ensembl_gene_id",
+      attributes = c(
+        "entrezgene_id",
+        "ensembl_gene_id",
+        paste0(sp_info[["symbol"]], '_symbol')
+      ),
+      values = gene_ids,
+      mart = mart
+    ) %>%
       dplyr::rename(c("ENTREZID", "ENSEMBL", "SYMBOL"))
 
-    ids = ids[!duplicated(ids$ENSEMBL), ]
+    ids = ids[!duplicated(ids$ENSEMBL),]
 
-    if(drop == T) {
+    if (drop == T) {
       ids = ids %>% na.omit
     }
   }
@@ -254,28 +272,30 @@ palette_to_hex = function(palette = "RdBu", no_colors = 100, rev = F) {
 }
 
 generate_js_color_string = function(gene_node_types, add_front = "#333333FF", ...) {
-
   pal = palette_to_hex(...)
 
   colors = pal[unique(gene_node_types)]
-  if(!is.null(add_front)) {
+  if (!is.null(add_front)) {
     colors = c(add_front, colors)
   }
-  colors = paste0('"', paste(colors, collapse='", "'), '"')
+  colors = paste0('"', paste(colors, collapse = '", "'), '"')
   colors = paste0('d3.scaleOrdinal().range([', colors, ']) ;')
   return(colors)
 }
 
-create_networkplot_data = function(cp_df, geneList, pathway_categories = NULL, max_groups = 100) {
-  if(is.null(pathway_categories)) {
+create_networkplot_data = function(cp_df,
+                                   geneList,
+                                   pathway_categories = NULL,
+                                   max_groups = 100) {
+  if (is.null(pathway_categories)) {
     pathway_categories = nrow(data.frame(cp_df))
   } else {
     pathway_categories = min(c(nrow(data.frame(cp_df)), pathway_categories))
   }
 
-  fortified = cp_to_df(cp_df)[1:pathway_categories, ]
+  fortified = cp_to_df(cp_df)[1:pathway_categories,]
 
-  if(class(cp_df)[1] == "gseaResult") {
+  if (class(cp_df)[1] == "gseaResult") {
     value = "NES"
     fortified = fortified %>%
       dplyr::rename(geneID = "core_enrichment")
@@ -295,8 +315,6 @@ create_networkplot_data = function(cp_df, geneList, pathway_categories = NULL, m
     tidyr::separate_rows(geneID, sep = "/") %>%
     pull(geneID)
 
-  # gene_nodes = merge(cp_df@gene2Symbol %>% as_tibble(rownames = "ENTREZID"),
-  #                    data.frame(ENTREZID = names(geneList), fc = geneList, stringsAsFactors = F), by = "ENTREZID")
   gene_nodes = get_fcs(cp_df, geneList) %>% setNames(c("ENTREZID", "id", "value"))
   gene_nodes = gene_nodes %>%
     dplyr::select(-ENTREZID) %>%
@@ -324,21 +342,23 @@ create_networkplot_data = function(cp_df, geneList, pathway_categories = NULL, m
     dplyr::left_join(nodes %>% dplyr::select(id, id_num), by = c("to" = "id")) %>%
     dplyr::rename(to_num = "id_num")
 
-  return(list(nodes = as.data.frame(nodes, stringsAsFactors = F),
-              edges = as.data.frame(edges, stringsAsFactors = F)))
+  return(list(
+    nodes = as.data.frame(nodes, stringsAsFactors = F),
+    edges = as.data.frame(edges, stringsAsFactors = F)
+  ))
 }
 
 create_emapplot_data = function(cp_df, pathway_categories = NULL) {
   overlap_ratio <- function(x, y) {
     x <- unlist(x)
     y <- unlist(y)
-    length(intersect(x, y))/length(unique(c(x,y)))
+    length(intersect(x, y)) / length(unique(c(x, y)))
   }
 
   fortified = cp_to_df(cp_df) %>%
     dplyr::filter(!is.na(Description))
 
-  if(is.null(pathway_categories)) {
+  if (is.null(pathway_categories)) {
     pathway_categories = nrow(fortified)
   } else {
     pathway_categories = min(nrow(fortified), pathway_categories)
@@ -349,7 +369,7 @@ create_emapplot_data = function(cp_df, pathway_categories = NULL) {
   nodes = sapply(geneSets[names(geneSets)], length) %>%
     as_tibble(rownames = "id") %>%
     dplyr::left_join(fortified %>% dplyr::select(ID, Description), by = c("id" = "ID")) %>%
-    dplyr::mutate(value = rescale(value, c(0,50))) %>%
+    dplyr::mutate(value = rescale(value, c(0, 50))) %>%
     dplyr::mutate(id_num = row_number() - 1) %>%
     dplyr::left_join(fortified %>% dplyr::select(ID, p.adjust), by = c("id" = "ID")) %>%
     dplyr::arrange(-p.adjust)
@@ -359,7 +379,7 @@ create_emapplot_data = function(cp_df, pathway_categories = NULL) {
 
   edges = data.frame()
 
-  if(length(fortified$ID) > 1) {
+  if (length(fortified$ID) > 1) {
     geneSets_combinations = combn(fortified$ID, 2, simplify = T) %>%
       t %>%
       data.frame(stringsAsFactors = F) %>%
@@ -377,80 +397,123 @@ create_emapplot_data = function(cp_df, pathway_categories = NULL) {
       dplyr::filter(overlap >= 0.2)
   }
 
-  if(nrow(edges) == 0) {
-    edges = data.frame(from = character(1),
-                       to = character(1),
-                       overlap = numeric(1),
-                       from_num = numeric(1),
-                       to_num = numeric(1),
-                       width = numeric(1))
+  if (nrow(edges) == 0) {
+    edges = data.frame(
+      from = character(1),
+      to = character(1),
+      overlap = numeric(1),
+      from_num = numeric(1),
+      to_num = numeric(1),
+      width = numeric(1)
+    )
   }
 
-  return(list(nodes = as.data.frame(nodes, stringsAsFactors = F),
-              edges = as.data.frame(edges, stringsAsFactors = F)))
+  return(list(
+    nodes = as.data.frame(nodes, stringsAsFactors = F),
+    edges = as.data.frame(edges, stringsAsFactors = F)
+  ))
 }
 
-create_legend = function(vals, palette, no_colors, symmetric = TRUE, rev = FALSE) {
-
+create_legend = function(vals,
+                         palette,
+                         no_colors,
+                         symmetric = TRUE,
+                         rev = FALSE) {
   pal = palette_to_hex(palette, no_colors, rev)
 
-  if(symmetric) {
+  if (symmetric) {
     max_val = max(abs(min(vals)), abs(max(vals)))
-    df = data.frame(x = seq(max_val, -max_val, length.out = no_colors))
+    df = data.frame(x = seq(max_val,-max_val, length.out = no_colors))
   } else {
     df = data.frame(x = seq(min(vals), max(vals), length.out = no_colors))
   }
 
-  tile_width = max((max(df$x) - min(df$x)) / (no_colors-1))
+  tile_width = max((max(df$x) - min(df$x)) / (no_colors - 1))
 
   ggplot(df, aes(fill = x)) +
-    geom_tile(aes(x = x, y = 1, width = tile_width, height = 1)) +
+    geom_tile(aes(
+      x = x,
+      y = 1,
+      width = tile_width,
+      height = 1
+    )) +
     scale_fill_gradientn(colors = pal) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_y_continuous(expand = c(0, 0)) +
     coord_cartesian(xlim = c(min(df$x), max(df$x))) +
     theme_void() +
-    theme(plot.margin = unit(c(20,5,5,5), "point"),
-          axis.text.x = element_text(),
-          axis.ticks.length = unit(5, "points"),
-          axis.ticks.x = element_line(),
-          legend.position = "none")
+    theme(
+      plot.margin = unit(c(20, 5, 5, 5), "point"),
+      axis.text.x = element_text(),
+      axis.ticks.length = unit(5, "points"),
+      axis.ticks.x = element_line(),
+      legend.position = "none"
+    )
 
 }
 
 # visualization helpers --------------------------------------------------------
 default_dt = function(x, opts = NULL) {
   def_opts = list(
-    dom = "Blrtip",  # specify content (search box, etc)
+    dom = "Blrtip",
+    # specify content (search box, etc)
     deferRender = TRUE,
     scrollY = 600,
     scroller = TRUE,
-    buttons = list(
-      I("colvis"),
-      "csv",
-      "excel"))
+    buttons = list(I("colvis"),
+                   "csv",
+                   "excel")
+  )
 
-  DT::datatable(x,
-                rownames = T,
-                escape = F,
-                filter = "top",
-                extensions = c("Buttons", "Scroller"),
-                style="bootstrap",
-                class="compact stripe",
-                width="100%",
-                options=c(def_opts, opts))
+  DT::datatable(
+    x,
+    rownames = T,
+    escape = F,
+    filter = "top",
+    extensions = c("Buttons", "Scroller"),
+    style = "bootstrap",
+    class = "compact stripe",
+    width = "100%",
+    options = c(def_opts, opts)
+  )
 }
 
 # TODO verify if columns are present
 format_gene_expr_dt = function(data, sp_info) {
-
-
   data = data %>%
-    dplyr::mutate(ENTREZID = paste0('<a href="https://www.ncbi.nlm.nih.gov/gene/', ENTREZID, '" target="_blank">', ENTREZID,'</a>'),
-                  ENSEMBL = paste0('<a href="https://www.ensembl.org/',gsub(" ", "_", sp_info['full_name']) ,'/Gene/Summary?g=', ENSEMBL, '" target="_blank">', ENSEMBL,'</a>'),
-                  SYMBOL = paste0('<span title="', GENENAME, '">', SYMBOL,'</span>')) %>%
+    dplyr::mutate(
+      ENTREZID = paste0(
+        '<a href="https://www.ncbi.nlm.nih.gov/gene/',
+        ENTREZID,
+        '" target="_blank">',
+        ENTREZID,
+        '</a>'
+      ),
+      ENSEMBL = paste0(
+        '<a href="https://www.ensembl.org/',
+        gsub(" ", "_", sp_info['full_name']) ,
+        '/Gene/Summary?g=',
+        ENSEMBL,
+        '" target="_blank">',
+        ENSEMBL,
+        '</a>'
+      ),
+      SYMBOL = paste0(
+        '<span title="',
+        GENENAME, '">',
+        SYMBOL,
+        '</span>')
+    ) %>%
     dplyr::select(-GENENAME) %>%
-    dplyr::select(ENTREZID, ENSEMBL, SYMBOL, !!fc_column_name, !!pval_column_name, !!padj_column_name, any_of(c("SYMBOL_HUMAN", "ENTREZID_HUMAN")))
+    dplyr::select(
+      ENTREZID,
+      ENSEMBL,
+      SYMBOL,
+      !!fc_column_name,
+      !!pval_column_name,
+      !!padj_column_name,
+      any_of(c("SYMBOL_HUMAN", "ENTREZID_HUMAN"))
+    )
   return(data)
 }
 
@@ -481,15 +544,22 @@ set_contrast_to_comb_string = function(sc, m, sep = "__int__") {
   return(cs)
 }
 
-filter_data = function(data, padj_column = "padj", padj_threshold = 0.05, fc_column = "log2FoldChange", fc_threshold = 0.6) {
+filter_data = function(data,
+                       padj_column = "padj",
+                       padj_threshold = 0.05,
+                       fc_column = "log2FoldChange",
+                       fc_threshold = 0.6) {
   data %>%
     dplyr::filter(!!as.symbol(padj_column) < padj_threshold) %>%
     dplyr::filter(abs(!!as.symbol(fc_column)) > fc_threshold)
 }
 
-create_set_intersection_name = function(setid, m, remove_prefix = "SET.", sep = "__int__") {
+create_set_intersection_name = function(setid,
+                                        m,
+                                        remove_prefix = "SET.",
+                                        sep = "__int__") {
   n = paste(gsub(remove_prefix, "", setid) %>% comb_string_to_set_name(m),
-        collapse = sep)
+            collapse = sep)
   return(n)
 }
 
@@ -500,34 +570,48 @@ get_upset_list = function(data_list, id_type = "ENTREZID", ...) {
   })
 }
 
-get_upset_sets = function(data_list, min_set_size, multi = TRUE, id_type = "ENTREZID", set_sep = "__int__") {
+get_upset_sets = function(data_list,
+                          min_set_size,
+                          multi = TRUE,
+                          id_type = "ENTREZID",
+                          set_sep = "__int__") {
   m = get_upset_list(data_list, id_type = id_type) %>%
     make_comb_mat()
 
-  if(multi == FALSE) {
-    usets = comb_name(m)[comb_degree(m) <= 1 & comb_size(m) >= min_set_size]
+  if (multi == FALSE) {
+    usets = comb_name(m)[comb_degree(m) <= 1 &
+                           comb_size(m) >= min_set_size]
   } else {
-    usets = comb_name(m)[comb_degree(m) > 1 & comb_size(m) >= min_set_size]
+    usets = comb_name(m)[comb_degree(m) > 1 &
+                           comb_size(m) >= min_set_size]
   }
 
   usets_name = map_chr(usets, ~ create_set_intersection_name(.x, m))
 
-  return(data.frame(set_id = usets,
-                    set_name = usets_name,
-                    comb_size = comb_size(m)[usets] %>% unname(),
-                    comb_degree = comb_degree(m)[usets] %>% unname(),
-                    stringsAsFactors = F))
+  return(
+    data.frame(
+      set_id = usets,
+      set_name = usets_name,
+      comb_size = comb_size(m)[usets] %>% unname(),
+      comb_degree = comb_degree(m)[usets] %>% unname(),
+      stringsAsFactors = F
+    )
+  )
 }
 
-get_unique_expr_data = function(data_list, contrast, min_set_size = 50, id_type = "ENTREZID", set_sep = "__int__") {
+get_unique_expr_data = function(data_list,
+                                contrast,
+                                min_set_size = 50,
+                                id_type = "ENTREZID",
+                                set_sep = "__int__") {
   m = get_upset_list(data_list, id_type = id_type) %>%
     make_comb_mat()
 
   sn = set_contrast_to_comb_string(contrast, m, set_sep)
   gene_ids = extract_comb(m, sn)
 
-  if(length(gene_ids) >= min_set_size) {
-    if(comb_string_to_degree(sn) == 1) {
+  if (length(gene_ids) >= min_set_size) {
+    if (comb_string_to_degree(sn) == 1) {
       df = data_list[[contrast]] %>%
         dplyr::filter(!!as.symbol(id_type) %in% gene_ids)
       return(df)
@@ -542,14 +626,14 @@ get_unique_expr_data = function(data_list, contrast, min_set_size = 50, id_type 
       return(df)
     }
   } else {
-    return(data_list[[1]][FALSE,])
+    return(data_list[[1]][FALSE, ])
   }
 }
 
 # main clusterProfiler functions  ----------------------------------------------
 create_subpage_data = function(expr_data, sp_info, params) {
-
-  if(params$type %in% c("Disease", "ConsensusPathDB") && sp_info['common'] != "human") {
+  if (params$type %in% c("Disease", "ConsensusPathDB") &&
+      sp_info['common'] != "human") {
     expr_data = expr_data %>%
       add_human_ids(sp_info)
     select_entrez_id = "ENTREZID_HUMAN"
@@ -557,39 +641,72 @@ create_subpage_data = function(expr_data, sp_info, params) {
     select_entrez_id = "ENTREZID"
   }
 
-  if(params$analysis %in% c("ORA")) {
-    expr_data = filter_data(expr_data,
-                            padj_column = padj_column_name,
-                            padj_threshold = gene_padj_threshold,
-                            fc_column = fc_column_name,
-                            fc_threshold = gene_fc_threshold)
+  if (params$analysis %in% c("ORA")) {
+    expr_data = filter_data(
+      expr_data,
+      padj_column = padj_column_name,
+      padj_threshold = gene_padj_threshold,
+      fc_column = fc_column_name,
+      fc_threshold = gene_fc_threshold
+    )
 
-  } else if(params$analysis %in% c("GSEA")) {
+  } else if (params$analysis %in% c("GSEA")) {
     # TODO implement custom ordering
   }
 
-  geneList = structure(expr_data[ ,fc_column_name], names = as.character(expr_data[ ,select_entrez_id])) %>%
+  geneList = structure(expr_data[, fc_column_name], names = as.character(expr_data[, select_entrez_id])) %>%
     sort(decreasing = T)
 
-  if(length(filter_gene_list(geneList, params$gene_set)) < 1) { return(NULL) }
+  if (length(filter_gene_list(geneList, params$gene_set)) < 1) {
+    return(NULL)
+  }
 
   # Generate enrichResult or gseaResult dataframe to pass as data to subpage
-  df = get_wrapper(params$type, params$analysis)(filter_gene_list(geneList, params$gene_set), params$category, sp_info)
-  if(nrow(data.frame(df)) == 0 | is.null(df)) { return(NULL) }
-  if(df@readable == FALSE) {df = setReadable(df, sp_info['orgdb'], keyType = "ENTREZID")}
+  df = get_wrapper(params$type, params$analysis)(filter_gene_list(geneList, params$gene_set),
+                                                 params$category,
+                                                 sp_info)
+  if (nrow(data.frame(df)) == 0 | is.null(df)) {
+    return(NULL)
+  }
+  if (df@readable == FALSE) {
+    df = setReadable(df, sp_info['orgdb'], keyType = "ENTREZID")
+  }
 
-  return(list(params = params, geneList = geneList, df = df, expr_data = expr_data))
+  return(list(
+    params = params,
+    geneList = geneList,
+    df = df,
+    expr_data = expr_data
+  ))
 }
 
 create_subpage_markdown = function(subpage_data, subpage_markdown = 'subpage.Rmd') {
   # Create temporary environment which we use for knitting subpages.RMD
   subpage_env <- new.env()
 
-  assign("subpage_item", paste0(subpage_data$params$analysis, " - ", subpage_data$params$gene_set), subpage_env)
-  assign("subpage_category", subpage_data$params$heading, subpage_env)
-  assign("subpage_heading", paste0(subpage_data$params$heading, " - ",
-                                   subpage_data$params$analysis, " - ",
-                                   subpage_data$params$gene_set), subpage_env)
+  assign(
+    "subpage_item",
+    paste0(
+      subpage_data$params$analysis,
+      " - ",
+      subpage_data$params$gene_set
+    ),
+    subpage_env
+  )
+  assign("subpage_category",
+         subpage_data$params$heading,
+         subpage_env)
+  assign(
+    "subpage_heading",
+    paste0(
+      subpage_data$params$heading,
+      " - ",
+      subpage_data$params$analysis,
+      " - ",
+      subpage_data$params$gene_set
+    ),
+    subpage_env
+  )
   assign("params", subpage_data$params, subpage_env)
   assign("geneList", subpage_data$geneList, subpage_env)
   assign("subpage_df", subpage_data$df, subpage_env)
@@ -598,11 +715,10 @@ create_subpage_markdown = function(subpage_data, subpage_markdown = 'subpage.Rmd
 }
 
 create_pathway_csv = function(subpage_data, template, path) {
-
   df = cp_to_df(subpage_data$df)
   params = subpage_data$params
 
-  if(class(subpage_data$df) == "gseaResult") {
+  if (class(subpage_data$df) == "gseaResult") {
     value = "NES"
     df = df %>% dplyr::rename(geneID = "core_enrichment")
   } else {
@@ -619,10 +735,25 @@ create_pathway_csv = function(subpage_data, template, path) {
     left_join(fcs, by = "geneID") %>%
     dplyr::rename(SYMBOL = geneID)
 
-  filename = paste0(gsub(" ", "_", paste(params$type, params$category, params$analysis, params$gene_set)),
-                    "_", template, ".txt")
+  filename = paste0(gsub(
+    " ",
+    "_",
+    paste(
+      params$type,
+      params$category,
+      params$analysis,
+      params$gene_set
+    )
+  ),
+  "_", template, ".txt")
 
-  write.table(df, paste0(path, filename), quote = F, sep = '\t', row.names = F)
+  write.table(
+    df,
+    paste0(path, filename),
+    quote = F,
+    sep = '\t',
+    row.names = F
+  )
 }
 
 # TODO uses fc to order, might be useful to use custom ordering

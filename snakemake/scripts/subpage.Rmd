@@ -9,8 +9,12 @@ no_colors = 100
 
 pathway_table = cp_to_df(subpage_df)
 
-if(class(subpage_df)[1] == "gseaResult") {
-  num_genes = length(lapply(data.frame(pathway_table)$core_enrichment, strsplit, split = "/") %>% unlist %>% unique)
+if (class(subpage_df)[1] == "gseaResult") {
+  num_genes = length(lapply(
+    data.frame(pathway_table)$core_enrichment,
+    strsplit,
+    split = "/"
+  ) %>% unlist %>% unique)
   order_by = "NES"
 } else {
   num_genes = length(lapply(data.frame(pathway_table)$geneID, strsplit, split = "/") %>% unlist %>% unique)
@@ -22,7 +26,7 @@ hide_table_cols = (match(hide_columns, names(pathway_table)) %>% na.omit) - 1
 
 # TODO sometimes truncated version has same name after
 subpage_df_trunc = subpage_df %>%
- clusterProfiler::mutate(Description = stringr::str_trunc(Description, 43))
+  clusterProfiler::mutate(Description = stringr::str_trunc(Description, 43))
 ```
 
 Column {data-width=250}
@@ -30,10 +34,22 @@ Column {data-width=250}
 
 ### Dotplot
 ```{r fig.width=7, fig.height=10, out.width="100%", out.height="100%"}
-(dotplot(subpage_df_trunc, orderBy = order_by, showCategory = dotplot_categories) +
-  scale_colour_gradientn(colours = palette_to_hex(palette = pathway_palette, no_colors = no_colors, rev = T)) + 
-  theme_bw(base_size = 12) +
-  theme(legend.position="none")) %>%
+(
+  dotplot(
+    subpage_df_trunc,
+    orderBy = order_by,
+    showCategory = dotplot_categories
+  ) +
+    scale_colour_gradientn(
+      colours = palette_to_hex(
+        palette = pathway_palette,
+        no_colors = no_colors,
+        rev = T
+      )
+    ) +
+    theme_bw(base_size = 12) +
+    theme(legend.position = "none")
+) %>%
   ggplotly()
 ```
 
@@ -60,23 +76,30 @@ gene_node_type = network_data$nodes %>%
   pull %>%
   as.numeric
 
-forceNetwork(Links = network_data$edges,
-             Nodes = network_data$nodes,
-             colourScale = JS(generate_js_color_string(gene_node_type, 
-                                                       palette = gene_palette,
-                                                       no_colors = no_colors,
-                                                       rev = T)),
-             Source = "from_num", Target = "to_num",
-             NodeID = "name",
-             Group = "group",
-             fontFamily = "Helvetica",
-             fontSize = 12,
-             opacity = 1,
-             linkDistance = 125,
-             linkColour = "#808080",
-             charge = -125,
-             opacityNoHover = 1,
-             zoom = T)
+forceNetwork(
+  Links = network_data$edges,
+  Nodes = network_data$nodes,
+  colourScale = JS(
+    generate_js_color_string(
+      gene_node_type,
+      palette = gene_palette,
+      no_colors = no_colors,
+      rev = T
+    )
+  ),
+  Source = "from_num",
+  Target = "to_num",
+  NodeID = "name",
+  Group = "group",
+  fontFamily = "Helvetica",
+  fontSize = 12,
+  opacity = 1,
+  linkDistance = 125,
+  linkColour = "#808080",
+  charge = -125,
+  opacityNoHover = 1,
+  zoom = T
+)
 ```
 
 ### Heatplot/Leading edge analysis
@@ -88,18 +111,28 @@ if(class(subpage_df)[1] == "gseaResult") {
   })
   null_plots = vector(mode = "list", length = (15 - show_plots))
   grobs = c(grobs, null_plots)
-  cowplot::plot_grid(plotlist = grobs, 
-                     ncol = 3, 
-                     labels = paste0(paste(rep(" ", 12), collapse = ""), subpage_df$Description[1:show_plots]), 
-                     label_size = 8,
-                     hjust = 0)
+  cowplot::plot_grid(
+    plotlist = grobs,
+    ncol = 3,
+    labels = paste0(paste(rep(" ", 12), collapse = ""), subpage_df$Description[1:show_plots]),
+    label_size = 8,
+    hjust = 0
+  )
 } else {
-  (heatplot(subpage_df, foldChange=geneList, showCategory = heatplot_categories) +
-    scale_fill_gradient2(low = pal_lmh[1], mid = pal_lmh[2], high = pal_lmh[3]) +
-    theme_minimal(base_size = 12) +
-    theme(panel.grid.major = element_blank(),
-          axis.text.x=element_text(angle = 90, hjust = 1),
-          legend.position = "none")) %>%
+  (
+    heatplot(subpage_df, foldChange = geneList, showCategory = heatplot_categories) +
+      scale_fill_gradient2(
+        low = pal_lmh[1],
+        mid = pal_lmh[2],
+        high = pal_lmh[3]
+      ) +
+      theme_minimal(base_size = 12) +
+      theme(
+        panel.grid.major = element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position = "none"
+      )
+  ) %>%
     ggplotly()
 }
 ```
@@ -108,26 +141,32 @@ if(class(subpage_df)[1] == "gseaResult") {
 ```{r fig.width=10, fig.height=8}
 emap_data = create_emapplot_data(subpage_df, pathway_categories = emapplot_categories)
 
-forceNetwork(Links = emap_data$edges,
-             Nodes = emap_data$nodes,
-             colourScale = JS(generate_js_color_string(emap_data$nodes$group, 
-                                                       add_front = NULL, 
-                                                       palette = viridis, 
-                                                       rev = T)),
-             Source = "from_num",
-             Target = "to_num",
-             NodeID = "Description",
-             Nodesize = "value",
-             Group = "group",
-             Value = "width",
-             fontFamily = "Helvetica",
-             fontSize = 14,
-             opacity = 1,
-             linkDistance = 150,
-             linkColour = "#C0C0C0",
-             charge = -125,
-             opacityNoHover = 1,
-             zoom = T)
+forceNetwork(
+  Links = emap_data$edges,
+  Nodes = emap_data$nodes,
+  colourScale = JS(
+    generate_js_color_string(
+      emap_data$nodes$group,
+      add_front = NULL,
+      palette = viridis,
+      rev = T
+    )
+  ),
+  Source = "from_num",
+  Target = "to_num",
+  NodeID = "Description",
+  Nodesize = "value",
+  Group = "group",
+  Value = "width",
+  fontFamily = "Helvetica",
+  fontSize = 14,
+  opacity = 1,
+  linkDistance = 150,
+  linkColour = "#C0C0C0",
+  charge = -125,
+  opacityNoHover = 1,
+  zoom = T
+)
 ```
 
 Column {data-width=300}
@@ -135,19 +174,34 @@ Column {data-width=300}
 
 ### Data table
 ```{r fig.width=10, fig.height=9, out.height="100%"}
-pathway_table %>% 
+pathway_table %>%
   dplyr::select(-ID) %>%
-  default_dt(list(columnDefs = list(list(targets = hide_table_cols, visible = FALSE)))) %>%
-  formatRound(columns = c(2:6), digits=4)
+  default_dt(list(columnDefs = list(
+    list(targets = hide_table_cols, visible = FALSE)
+  ))) %>%
+  formatRound(columns = c(2:6), digits = 4)
 ```
  
 ### Plot legends
 ```{r fig.width=10, fig.height=1, out.height="100%"}
-plot_grid(create_legend(network_data$nodes %>% dplyr::filter(group != "process") %>% pull(value), gene_palette, no_colors, rev = T),
-          create_legend(emap_data$nodes %>% pull(p.adjust), pathway_palette, no_colors, symmetric = F, rev = T), 
-          labels = c('   Gene expression (log2 fold-change)', '   Pathway p-value'),
-          label_size = 12,
-          hjust = 0,
-          vjust = 1)
+plot_grid(
+  create_legend(
+    network_data$nodes %>% dplyr::filter(group != "process") %>% pull(value),
+    gene_palette,
+    no_colors,
+    rev = T
+  ),
+  create_legend(
+    emap_data$nodes %>% pull(p.adjust),
+    pathway_palette,
+    no_colors,
+    symmetric = F,
+    rev = T
+  ),
+  labels = c('   Gene expression (log2 fold-change)', '   Pathway p-value'),
+  label_size = 12,
+  hjust = 0,
+  vjust = 1
+)
 ```
 

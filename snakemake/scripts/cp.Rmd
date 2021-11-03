@@ -13,10 +13,19 @@ output:
 options(knitr.duplicate.label = 'allow')
 knitr::opts_knit$set(root.dir = normalizePath(".."))
 
-all_cp = map(split(payloads_sub, 1:nrow(payloads_sub)) %>% unname %>% map(~ c(.x)),
-             ~ do.call(create_subpage_data, list(expr_data = data, sp_info = sp_info, params = .x)))
+all_cp = map(
+  split(payloads_sub, 1:nrow(payloads_sub)) %>% unname %>% map( ~ c(.x)),
+  ~ do.call(
+    create_subpage_data,
+    list(
+      expr_data = data,
+      sp_info = sp_info,
+      params = .x
+    )
+  )
+)
 
-if(template == "contrast") {
+if (template == "contrast") {
   set_overview = FALSE
 } else {
   input_contrast = outdir
@@ -72,7 +81,10 @@ map_if(all_cp,
 
 <!-- render subpages with pathway data -->
 ```{r include = F, eval = T}
-out = map_if(all_cp, is.not.empty.list, ~ create_subpage_markdown(.x), .else = "")
+out = map_if(all_cp,
+             is.not.empty.list,
+             ~ create_subpage_markdown(.x),
+             .else = "")
 ```
 
 `r paste(knitr::knit_child(text = out), collapse = '')`

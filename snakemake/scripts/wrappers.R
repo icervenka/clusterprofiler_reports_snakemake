@@ -152,7 +152,10 @@ enrichGO_wrapper = function(list, category, species) {
     readable      = TRUE
   )
   if(!is.null(df)) {
-    df = clusterProfiler::simplify(df, cutoff=0.7, by="p.adjust", select_fun=min)
+    df = clusterProfiler::simplify(df,
+                                   cutoff = go_simplify_cutoff,
+                                   by = "p.adjust",
+                                   select_fun = min)
   }
 }
 
@@ -168,7 +171,10 @@ gseaGO_wrapper = function(list, category, species) {
     verbose      = FALSE
   )
   if(!is.null(df)) {
-    df = clusterProfiler::simplify(df, cutoff=0.7, by="p.adjust", select_fun=min)
+    df = clusterProfiler::simplify(df,
+                                   cutoff = go_simplify_cutoff,
+                                   by = "p.adjust",
+                                   select_fun = min)
   }
 }
 
@@ -180,7 +186,9 @@ enrichMSIG_wrapper = function(list, category, species) {
     subcategory = NULL
   }
 
-  db = msigdbr(species = species[["full_name"]] , category = category_split[1], subcategory = subcategory) %>%
+  db = msigdbr(species = species[["full_name"]] ,
+               category = category_split[1],
+               subcategory = subcategory) %>%
     dplyr::select(gs_name, entrez_gene)
   df = enricher(names(list),
                 TERM2GENE     = db,
@@ -198,7 +206,9 @@ gseaMSIG_wrapper = function(list, category, species) {
     subcategory = NULL
   }
 
-  db = msigdbr(species = species[["full_name"]] , category = category_split[1], subcategory = subcategory) %>%
+  db = msigdbr(species = species[["full_name"]] ,
+               category = category_split[1],
+               subcategory = subcategory) %>%
     dplyr::select(gs_name, entrez_gene)
   df = GSEA(list,
             TERM2GENE     = db,
@@ -255,10 +265,13 @@ enrichPathways_wrapper = function(list, category, species) {
 
   enrichWiki_wrapper = function(list, category, species) {
     suppressPackageStartupMessages(library(rWikiPathways))
-    wiki_archive = downloadPathwayArchive(organism=species[['full_name']], format="gmt")
+    wiki_archive = downloadPathwayArchive(organism = species[['full_name']], 
+                                          format = "gmt")
     wp2gene = read.gmt(wiki_archive)
-    if(file.exists(wiki_archive)) { file.remove(wiki_archive) }
-    wp2gene = wp2gene %>% tidyr::separate(term, c("name","version","wpid","org"), "%")
+    if (file.exists(wiki_archive)) {
+      file.remove(wiki_archive)
+    }
+    wp2gene = wp2gene %>% tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
     wpid2gene = wp2gene %>% dplyr::select(wpid, gene) #TERM2GENE
     wpid2name = wp2gene %>% dplyr::select(wpid, name) #TERM2NAME
 
@@ -327,10 +340,13 @@ gseaPathways_wrapper = function(list, category, species) {
 
   gseaWiki_wrapper = function(list, category, species) {
     suppressPackageStartupMessages(library(rWikiPathways))
-    wiki_archive = downloadPathwayArchive(organism=species['full_name'], format="gmt")
+    wiki_archive = downloadPathwayArchive(organism = species['full_name'], 
+                                          format = "gmt")
     wp2gene = read.gmt(wiki_archive)
-    if(file.exists(wiki_archive)) { file.remove(wiki_archive) }
-    wp2gene = wp2gene %>% tidyr::separate(term, c("name","version","wpid","org"), "%")
+    if (file.exists(wiki_archive)) {
+      file.remove(wiki_archive)
+    }
+    wp2gene = wp2gene %>% tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
     wpid2gene = wp2gene %>% dplyr::select(wpid, gene) #TERM2GENE
     wpid2name = wp2gene %>% dplyr::select(wpid, name) #TERM2NAME
 
@@ -360,7 +376,7 @@ enrichConsensusdb_wrapper = function(list, category, species) {
     dplyr::mutate(pathway = gsub(" - Homo sapiens (human)", "", pathway)) %>%
     dplyr::mutate(external_id = ifelse(external_id == "None", dplyr::row_number(), external_id)) %>%
     separate_rows(entrez_gene_ids, sep = ",")
-
+  
   term2gene = cpdb_cat %>% dplyr::select(external_id, entrez_gene_ids)
   term2name = cpdb_cat %>% dplyr::select(external_id, pathway)
 
