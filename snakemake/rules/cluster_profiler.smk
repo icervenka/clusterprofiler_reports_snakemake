@@ -4,13 +4,6 @@ def get_cp_output_files(wildcards):
     return expand(REPORT_OUTDIR + "{contrast}/{type}_{template}.html",
         contrast = Metadata.contrast, type = types, template = templates)
 
-rule create_csv_output_dir:
-    input:
-    output:
-        directory(CSV_OUTDIR)
-    shell:
-        "mkdir {output}"
-
 rule cp:
     input:
         file=get_file,

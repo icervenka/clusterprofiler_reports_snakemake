@@ -11,13 +11,13 @@ clusterProfiler:
   # Disease, GeneOntology, MSigDB, MSigDB_cancer, MeSH_g2p, MeSH_gendoo,
   # Pathways, ConsensusPathDB
   types:
-    # - "Disease"
-    # - "GeneOntology"
-    # - "MSigDB"
-    # - "MSigDB_cancer"
-    # - "MeSH_g2p"
-    # - "MeSH_gendoo"
-    # - "Pathways"
+    - "Disease"
+    - "GeneOntology"
+    - "MSigDB"
+    - "MSigDB_cancer"
+    - "MeSH_g2p"
+    - "MeSH_gendoo"
+    - "Pathways"
     - "ConsensusPathDB"
   # name of the gene ID column in the deg file
   id_column_name: "ENSEMBL"
@@ -34,11 +34,11 @@ clusterProfiler:
   enrich_minGS: 10
   enrich_maxGS: 200
   enrich_pval_cutoff: 0.05
+  go_simplify_cutoff: 0.7
   gse_nperm: 10000
   gse_minGS: 10
   gse_maxGS: 200
   gse_pval_cutoff: 0.25
-  go_simplify_cutoff: 0.7
   # minimum number of genes in individual unique upset sets for analysis
   min_set_size: 50
   # max number of categories shown in plots

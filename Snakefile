@@ -1,5 +1,6 @@
 import pandas as pd
 import glob
+import os
 from snakemake.utils import validate, min_version
 
 ##### set minimum snakemake version #####
@@ -10,6 +11,8 @@ include: "snakemake/rules/common.smk"
 include: "snakemake/rules/functions.smk"
 configfile: "config.yaml"
 # validate(config, schema="snakemake/schema/config.schema.yaml")
+
+os.mkdir(CSV_OUTDIR)
 
 Metadata = pd.read_table(config["metadata"])
 types = config["clusterProfiler"]["types"]
@@ -35,7 +38,6 @@ include: "snakemake/rules/create_archive.smk"
 # TODO enrichr libraries https://maayanlab.cloud/Enrichr/#libraries
 rule all:
     input:
-        directory(CSV_OUTDIR),
         get_cp_output_files,
         get_cp_multi_output_files,
         get_archive_output_files,

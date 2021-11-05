@@ -66,7 +66,7 @@ add_idcolnames = function(d,
       dplyr::select(all_of(required_colnames), everything())
     return(merge_ids)
   } else {
-    return(d %>% dplyr::select(required_colnames, everything()))
+    return(d %>% dplyr::select(all_of(required_colnames), everything()))
   }
 }
 
