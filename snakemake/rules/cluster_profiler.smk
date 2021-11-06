@@ -1,5 +1,3 @@
-# TODO export csv with pathways/genes with fc in long format
-
 def get_cp_output_files(wildcards):
     return expand(REPORT_OUTDIR + "{contrast}/{type}_{template}.html",
         contrast = Metadata.contrast, type = types, template = templates)

@@ -1,3 +1,4 @@
+<!-- renders all subpages from cp identified pathway data -->
 ```{r render_subpages, include=F}
 
 out = map(all_cp, function(x) {
@@ -8,4 +9,5 @@ out = map(all_cp, function(x) {
 
 ```
 
+<!-- knit together list of all subpage data -->
 `r paste(knitr::knit_child(text = out), collapse = '')`

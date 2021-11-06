@@ -1,3 +1,9 @@
+# different clusterProfiler enrichr and gsea functions take different number of
+# arguments. The wrappers present the same interface, so they are more easily
+# used in loops.
+# TODO optionally put all the  params into the list and pass it as an function
+# argument
+
 suppressPackageStartupMessages(library(clusterProfiler))
 suppressPackageStartupMessages(library(DOSE))
 suppressPackageStartupMessages(library(enrichplot))
@@ -265,7 +271,7 @@ enrichPathways_wrapper = function(list, category, species) {
 
   enrichWiki_wrapper = function(list, category, species) {
     suppressPackageStartupMessages(library(rWikiPathways))
-    wiki_archive = downloadPathwayArchive(organism = species[['full_name']], 
+    wiki_archive = downloadPathwayArchive(organism = species[['full_name']],
                                           format = "gmt")
     wp2gene = read.gmt(wiki_archive)
     if (file.exists(wiki_archive)) {
@@ -340,7 +346,7 @@ gseaPathways_wrapper = function(list, category, species) {
 
   gseaWiki_wrapper = function(list, category, species) {
     suppressPackageStartupMessages(library(rWikiPathways))
-    wiki_archive = downloadPathwayArchive(organism = species['full_name'], 
+    wiki_archive = downloadPathwayArchive(organism = species['full_name'],
                                           format = "gmt")
     wp2gene = read.gmt(wiki_archive)
     if (file.exists(wiki_archive)) {
@@ -376,7 +382,7 @@ enrichConsensusdb_wrapper = function(list, category, species) {
     dplyr::mutate(pathway = gsub(" - Homo sapiens (human)", "", pathway)) %>%
     dplyr::mutate(external_id = ifelse(external_id == "None", dplyr::row_number(), external_id)) %>%
     separate_rows(entrez_gene_ids, sep = ",")
-  
+
   term2gene = cpdb_cat %>% dplyr::select(external_id, entrez_gene_ids)
   term2name = cpdb_cat %>% dplyr::select(external_id, pathway)
 
