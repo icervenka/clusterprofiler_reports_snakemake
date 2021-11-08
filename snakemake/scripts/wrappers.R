@@ -100,7 +100,7 @@ enrichDisease_wrapper = function(list, category, species) {
 gseaDisease_wrapper = function(list, category, species) {
   gseaDO_wrapper = function(list, category, species) {
     df = gseDO(list,
-               nPerm         = gse_nperm,
+#               nPerm         = gse_nperm,
                pvalueCutoff  = gse_pval_cutoff,
                pAdjustMethod = "BH",
                minGSSize     = gse_minGS,
@@ -113,7 +113,7 @@ gseaDisease_wrapper = function(list, category, species) {
 
   gseaNCG_wrapper = function(list, category, species) {
     df = gseNCG(list,
-                nPerm         = gse_nperm,
+#                nPerm         = gse_nperm,
                 pvalueCutoff  = gse_pval_cutoff,
                 pAdjustMethod = "BH",
                 minGSSize     = gse_minGS,
@@ -126,7 +126,7 @@ gseaDisease_wrapper = function(list, category, species) {
 
   gseaDGN_wrapper = function(list, category, species) {
     df = gseDGN(list,
-                nPerm         = gse_nperm,
+#                nPerm         = gse_nperm,
                 pvalueCutoff  = gse_pval_cutoff,
                 pAdjustMethod = "BH",
                 minGSSize     = gse_minGS,
@@ -218,7 +218,7 @@ gseaMSIG_wrapper = function(list, category, species) {
     dplyr::select(gs_name, entrez_gene)
   df = GSEA(list,
             TERM2GENE     = db,
-            nPerm         = gse_nperm,
+#            nPerm         = gse_nperm,
             pvalueCutoff  = gse_pval_cutoff,
             minGSSize     = gse_minGS,
             maxGSSize     = gse_maxGS)
@@ -242,7 +242,7 @@ gseaMESH_wrapper = function(list, category, species) {
                MeSHDb        = species[["meshdb"]],
                database      = category_split[2],
                category      = category_split[1],
-               nPerm         = gse_nperm,
+#               nPerm         = gse_nperm,
                pvalueCutoff  = gse_pval_cutoff,
                minGSSize     = gse_minGS,
                maxGSSize     = gse_maxGS)
@@ -290,34 +290,42 @@ enrichPathways_wrapper = function(list, category, species) {
                   maxGSSize     = enrich_maxGS)
   }
 
-  # enrichUniprot_wrapper = function(list, category, species) {
-  #   up <- UniProt.ws(species['tax'])
-  #   all_keys = keys(up, "ENTREZ_GENE")
-  #   res <- select(up, all_keys, columns = c("KEYWORDS"), keytype = "ENTREZ_GENE") %>%
-  #     na.omit
-  #   # res <- select(up, keys = c("22627","22629"), columns = c("KEYWORDS"), keytype = "ENTREZ_GENE") %>%
-  #   #   na.omit
-  #   uniprot_db = uniprot_db %>%
-  #     separate_rows(KEYWORDS, sep = ";") %>%
-  #     group_by(KEYWORDS) %>%
-  #     mutate(group_id = match(KEYWORDS, unique(KEYWORDS)))
-  #
-  #   term2gene = uniprot_db %>% dplyr::select(group_id, ENTREZ_GENE)
-  #   term2name = uniprot_db %>% dplyr::select(group_id, KEYWORDS)
-  #
-  #   df = enricher(names(list),
-  #                 TERM2GENE     = wpid2gene,
-  #                 TERM2NAME     = wpid2name,
-  #                 pvalueCutoff  = enrich_pval_cutoff,
-  #                 pAdjustMethod = "BH",
-  #                 minGSSize     = enrich_minGS,
-  #                 maxGSSize     = enrich_maxGS)
-  # }
+  enrichUniprot_wrapper = function(list, category, species) {
+    # up <- UniProt.ws(species['tax'])
+    # all_keys = keys(up, "ENTREZ_GENE")
+    # res <- select(up, all_keys, columns = c("KEYWORDS"), keytype = "ENTREZ_GENE") %>%
+    #   na.omit
+    # # res <- select(up, keys = c("22627","22629"), columns = c("KEYWORDS"), keytype = "ENTREZ_GENE") %>%
+    # #   na.omit
+    # uniprot_db = uniprot_db %>%
+    #   separate_rows(KEYWORDS, sep = ";") %>%
+    #   group_by(KEYWORDS) %>%
+    #   mutate(group_id = match(KEYWORDS, unique(KEYWORDS)))
+    #
+    # term2gene = uniprot_db %>% dplyr::select(group_id, ENTREZ_GENE)
+    # term2name = uniprot_db %>% dplyr::select(group_id, KEYWORDS)
+
+    term2gene = uniprot %>%
+      dplyr::filter(source_name == species[['abbreviation']] %>%
+      dplyr::select(id, ENTREZ_GENE)
+    term2name = uniprot %>%
+      dplyr::filter(source_name == species[['abbreviation']] %>%
+      dplyr::select(id, keyword)
+
+    df = enricher(names(list),
+                  TERM2GENE     = wpid2gene,
+                  TERM2NAME     = wpid2name,
+                  pvalueCutoff  = enrich_pval_cutoff,
+                  pAdjustMethod = "BH",
+                  minGSSize     = enrich_minGS,
+                  maxGSSize     = enrich_maxGS)
+  }
 
   pathways_function_map = list(
     "KEGG" = enrichKEGG_wrapper,
     "Reactome" = enrichReactome_wrapper,
-    "Wiki" = enrichWiki_wrapper)
+    "Wiki" = enrichWiki_wrapper,
+    "Uniprot" = enrichUniprot_wrapper)
   pathways_function_map[[category]](list, category, species)
 }
 
@@ -325,7 +333,7 @@ gseaPathways_wrapper = function(list, category, species) {
   gseaKEGG_wrapper = function(list, category, species) {
     df = gseKEGG(geneList      = list,
                  organism      = species[['kegg']],
-                 nPerm         = gse_nperm,
+#                 nPerm         = gse_nperm,
                  pvalueCutoff  = gse_pval_cutoff,
                  pAdjustMethod = "BH",
                  minGSSize     = gse_minGS,
@@ -336,7 +344,7 @@ gseaPathways_wrapper = function(list, category, species) {
   gseaReactome_wrapper = function(list, category, species) {
     df = gsePathway(list,
                     organism      = species['common'],
-                    nPerm         = gse_nperm,
+#                    nPerm         = gse_nperm,
                     pvalueCutoff  = gse_pval_cutoff,
                     pAdjustMethod = "BH",
                     minGSSize     = gse_minGS,
@@ -359,20 +367,34 @@ gseaPathways_wrapper = function(list, category, species) {
     df = GSEA(list,
               TERM2GENE     = wpid2gene,
               TERM2NAME     = wpid2name,
-              nPerm         = gse_nperm,
+#              nPerm         = gse_nperm,
               pvalueCutoff  = gse_pval_cutoff,
               minGSSize     = gse_minGS,
               maxGSSize     = gse_maxGS)
   }
 
-  # gseaUniprot_wrapper = function(list, category, species) {
-  #
-  # }
+  gseaUniprot_wrapper = function(list, category, species) {
+    term2gene = uniprot %>%
+      dplyr::filter(source_name == species[['abbreviation']] %>%
+      dplyr::select(id, ENTREZ_GENE)
+    term2name = uniprot %>%
+      dplyr::filter(source_name == species[['abbreviation']] %>%
+      dplyr::select(id, keyword)
+
+    df = GSEA(list,
+              TERM2GENE     = term2gene,
+              TERM2NAME     = term2name,
+#              nPerm         = gse_nperm,
+              pvalueCutoff  = gse_pval_cutoff,
+              minGSSize     = gse_minGS,
+              maxGSSize     = gse_maxGS)
+  }
 
   pathways_function_map = list(
     "KEGG" = gseaKEGG_wrapper,
     "Reactome" = gseaReactome_wrapper,
-    "Wiki" = gseaWiki_wrapper)
+    "Wiki" = gseaWiki_wrapper,
+    "Uniprot" = gseaUniprot_wrapper)
   pathways_function_map[[category]](list, category, species)
 }
 
@@ -411,7 +433,7 @@ gseaConsensusdb_wrapper = function(list, category, species) {
   df = GSEA(list,
             TERM2GENE     = term2gene,
             TERM2NAME     = term2name,
-            nPerm         = gse_nperm,
+#            nPerm         = gse_nperm,
             pvalueCutoff  = gse_pval_cutoff,
             minGSSize     = gse_minGS,
             maxGSSize     = gse_maxGS)

@@ -3,6 +3,8 @@
 # keywlist controlled vocabulary was downloaded from https://www.uniprot.org/docs/keywlist
 # gene_mapping is exported from uniprot search constrained by swissprot and organism
 # with added 'Cross-reference (GeneID)' and 'Keyword ID' column
+# Hierarchical keyword relationships are not preserved in this script, which makes it impossible
+# to remove redundancies in the final pathway enrichment
 
 suppressPackageStartupMessages(library(optparse))
 suppressPackageStartupMessages(library(readr))
@@ -13,12 +15,14 @@ suppressPackageStartupMessages(library(dplyr))
 
 option_list = list(
   make_option(c("-k", "--keywlist"), type="character", default="keywlist.txt",
-              help=" [default=%default]",
+              help="Text file with controlled vocabulary for uniprot keywords [default=%default]",
               metavar="character"),
   make_option(c("-s", "--source_names"), type="character", default="mmusculus",
-              help=" [default=%default]", metavar="character"),
+              help="Name of the source organism which the swissprot gene-keyword mappings come from.
+              Currently uses abbreviated species form (hsapiens, mmusculus, ...) 
+              [default=%default]", metavar="character"),
   make_option(c("-o", "--output"), type="character", default="uniprot_keywords_db.tab",
-              help=" [default=%default]",
+              help="Output file to write the compiled database to [default=%default]",
               metavar="character")
 )
 

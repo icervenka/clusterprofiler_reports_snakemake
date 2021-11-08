@@ -2,3 +2,4 @@ type,category,heading,flavour_text
 Pathways,KEGG,KEGG,
 Pathways,Reactome,Reactome,
 Pathways,Wiki,Wiki Pathways,
+Pathways,Uniprot,Uniprot keywords,
