@@ -12,21 +12,30 @@ suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(dplyr))
 
 option_list = list(
-  make_option(c("-k", "--kewylist"), type="character", default="kewylist.txt", 
-              help=" [default=%default]", 
+  make_option(c("-k", "--keywlist"), type="character", default="keywlist.txt",
+              help=" [default=%default]",
               metavar="character"),
-  make_option(c("-g", "--gene_mapping"), type="character", default="mus_musculus.tab", 
+  make_option(c("-s", "--source_names"), type="character", default="mmusculus",
               help=" [default=%default]", metavar="character"),
-  make_option(c("-o", "--output"), type="character", default="uniprot_keywords_db.csv", 
-              help=" [default=%default]", 
+  make_option(c("-o", "--output"), type="character", default="uniprot_keywords_db.tab",
+              help=" [default=%default]",
               metavar="character")
 )
 
-opt_parser = OptionParser(usage = "%prog [options]", option_list=option_list);
-opt = parse_args(opt_parser);
+opt_parser = OptionParser(usage = "%prog [options] swissprot_tab_db_files", option_list=option_list);
+opt = parse_args(opt_parser, positional_arguments = T);
 
-keywlist = readLines(opt$keywlist)
-keywlist = data.frame(X1 = keywlist[grep('^ID |^AC |^IC ', keywlist)], 
+keywlist_path = opt$options$keywlist
+source_names = str_split(opt$options$source_names, ",")[[1]]
+output = opt$options$output
+gene_mapping = opt$args
+
+if(length(source_names) != length(gene_mapping)) {
+  stop("Number of source names is not equal to number of gene mapping files to process.")
+}
+
+keywlist = readLines(keywlist_path)
+keywlist = data.frame(X1 = keywlist[grep('^ID |^AC |^IC ', keywlist)],
              stringsAsFactors = F) %>%
   dplyr::mutate(X1 = stringr::str_trim(gsub("^AC|ID|IC", "", X1)))
 
@@ -36,22 +45,27 @@ uniprot_keyword_mapping = data.frame(
 ) %>%
   dplyr::mutate(keyword = gsub("\\.", "", keyword))
 
-rnor_uniprot <- readr::read_delim(opt$gene_mapping,
-                           delim = "\t", 
-                           escape_double = FALSE,
-                           trim_ws = TRUE) %>%
-  tidyr::drop_na %>%
-  dplyr::mutate(ENTREZID = gsub("(\\d);.*","\\1",`Cross-reference (GeneID)`))
-
-genes = rnor_uniprot$ENTREZID
-ids = stringr::str_split(rnor_uniprot$`Keyword ID`, ";")
-
-uniprot_gene_mapping = purrr::map2_dfr(genes, ids, function(x, y) {
-  data.frame(id = stringr::str_trim(y), gene = stringr::str_trim(x))
-}) %>%
-  dplyr::arrange(id)
+uniprot_gene_mapping = purrr::map2_dfr(gene_mapping, source_names, function(x, y) {
+  gm = readr::read_delim(x,
+                    delim = "\t",
+                    escape_double = FALSE,
+                    trim_ws = TRUE,
+                    show_col_types = FALSE) %>%
+    tidyr::drop_na() %>%
+    dplyr::mutate(ENTREZID = gsub("(\\d);.*","\\1",`Cross-reference (GeneID)`))
+  
+  genes = gm$ENTREZID
+  ids = stringr::str_split(gm$`Keyword ID`, ";")
+  
+  purrr::map2_dfr(genes, ids, function(x, y) {
+    data.frame(id = stringr::str_trim(y), gene = stringr::str_trim(x))
+  }) %>%
+    dplyr::mutate(source_name = y) %>%
+    dplyr::arrange(source_name, id)
+})
 
 uniprot_db = uniprot_gene_mapping %>%
-  left_join(uniprot_keyword_mapping, by = "id")
+  dplyr::left_join(uniprot_keyword_mapping, by = "id") %>%
+  dplyr::select(source_name, id, gene, keyword)
 
-write.csv(uniprot_db, opt$output, quote = FALSE, row.names = FALSE)
+write.table(uniprot_db, output, sep = '\t', quote = FALSE, row.names = FALSE)
