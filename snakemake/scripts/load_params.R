@@ -6,7 +6,7 @@ cpdb = read.table(paste0(data_basepath, "CPDB_pathways_genes.tab"),
                   header = T,
                   stringsAsFactors = F)
 
-uniprot = read.table(paste0(data_basepath, "CPDB_pathways_genes.tab"),
+uniprot = read.table(paste0(data_basepath, "uniprot_keywords_db.tab"),
                   sep = '\t',
                   header = T,
                   stringsAsFactors = F)

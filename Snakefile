@@ -12,7 +12,10 @@ include: "snakemake/rules/functions.smk"
 configfile: "config.yaml"
 # validate(config, schema="snakemake/schema/config.schema.yaml")
 
-os.mkdir(CSV_OUTDIR)
+try:
+    os.mkdir(CSV_OUTDIR)
+except OSError as e:
+    print(e)
 
 Metadata = pd.read_table(config["metadata"])
 types = config["clusterProfiler"]["types"]
@@ -31,8 +34,7 @@ else:
 
 include: "snakemake/rules/create_archive.smk"
 
-# TODO implement go simplify cutoff
-# TODO add ridgplots and upset plot
+# TODO add ridgeplots and upset plot
 # TODO clustercompare
 # TODO explore new ggplot graphs
 # TODO enrichr libraries https://maayanlab.cloud/Enrichr/#libraries

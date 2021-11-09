@@ -305,16 +305,18 @@ enrichPathways_wrapper = function(list, category, species) {
     # term2gene = uniprot_db %>% dplyr::select(group_id, ENTREZ_GENE)
     # term2name = uniprot_db %>% dplyr::select(group_id, KEYWORDS)
 
+    head(uniprot)
     term2gene = uniprot %>%
-      dplyr::filter(source_name == species[['abbreviation']] %>%
-      dplyr::select(id, ENTREZ_GENE)
+      dplyr::filter(source_name == species[['abbreviation']]) %>%
+      dplyr::select(id, gene)
+
     term2name = uniprot %>%
-      dplyr::filter(source_name == species[['abbreviation']] %>%
+      dplyr::filter(source_name == species[['abbreviation']]) %>%
       dplyr::select(id, keyword)
 
     df = enricher(names(list),
-                  TERM2GENE     = wpid2gene,
-                  TERM2NAME     = wpid2name,
+                  TERM2GENE     = term2gene,
+                  TERM2NAME     = term2name,
                   pvalueCutoff  = enrich_pval_cutoff,
                   pAdjustMethod = "BH",
                   minGSSize     = enrich_minGS,
@@ -375,10 +377,11 @@ gseaPathways_wrapper = function(list, category, species) {
 
   gseaUniprot_wrapper = function(list, category, species) {
     term2gene = uniprot %>%
-      dplyr::filter(source_name == species[['abbreviation']] %>%
-      dplyr::select(id, ENTREZ_GENE)
+      dplyr::filter(source_name == species[['abbreviation']]) %>%
+      dplyr::select(id, gene)
+
     term2name = uniprot %>%
-      dplyr::filter(source_name == species[['abbreviation']] %>%
+      dplyr::filter(source_name == species[['abbreviation']]) %>%
       dplyr::select(id, keyword)
 
     df = GSEA(list,

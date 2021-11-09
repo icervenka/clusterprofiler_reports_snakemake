@@ -19,13 +19,9 @@ export_structures = function(s, path) {
 #
 # PADOG
 #
-# GAGE:
-#
 # GOPlot:
 #
 # pathfindeR:
-#
-# Uniprot:
 #
 # Enrichment Browser:
 
@@ -175,12 +171,12 @@ analysis_structure = list(
     "heading" = "Wiki Pathways",
     "flavour_text" = ""
   ),
-  # list(
-  #   "type" = "Pathways",
-  #   "category" = "Uniprot",
-  #   "heading" = "Uniprot keywords",
-  #   "flavour_text" = ""
-  # ),
+  list(
+    "type" = "Pathways",
+    "category" = "Uniprot",
+    "heading" = "Uniprot keywords",
+    "flavour_text" = ""
+  ),
   list(
     "type" = "ConsensusPathDB",
     "category" = "PharmGKB",
