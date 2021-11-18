@@ -1,14 +1,17 @@
 # ClusterProfiler report generator (Snakemake pipeline)
 
-This program serves as batch processing Snakemake pipelne for pathway
-enrichment of bulk RNASeq data. It uses ClusterProfiler package to iterate through
-pathways and samples and outputs html reports with interactive graphs.
+This program serves as batch processing Snakemake pipeline for pathway
+enrichment of bulk RNASeq data. It  makes use of clusterProfiler and flexdashboard
+markdown with widgets to generate reports on pathway analysis for gene expression data.
+Pathways analysis is split into several standalone html reports. Two types of pathway
+analysis are offered under clusterProfiler package: Over-representation analysis
+(ORA) and Gene Set Enrichment Analysis (GSEA).
 
 ## Usage
-You will need a `metadata.tsv` file with two columns `contrast` and `file` containing the name of the contrast from RNASeq data to analyse the file corresponding text file containing
-differential expression data for this particular contrast. Required columns in
-this file are a 'gene identifier' (ensembl, refseq or gene symbol), 'log2-fold-change'
-and 'p-value'.
+You will need a `metadata.tsv` file with two columns `contrast` and `file` containing
+the name of the contrast from RNASeq data to analyse the file corresponding file from gene
+differential expression analysis containing data for this particular contrast. The
+required structure of the file is described in the next part.
 
 Next the `config.yaml` file needs to be edited to reflect your desired output and
 analysis parameters. Please see the parameter section of the readme file for detailed
@@ -22,7 +25,10 @@ Please see the documentation to [Snakemake pipeline language](https://snakemake.
 for detailed introduction how to run the program.
 
 ## Input
-
+A text based file containing the output of a gene differential expression analysis must contain the following columns:
+  - gene identifier, must be one of supported by org.db
+  - log2 fold-change expression values
+  - corresponding p-values or adjusted p-values 
 
 ## Output
 Program creates an output directory with three subdirectories.
@@ -64,6 +70,9 @@ Pathway collections to be used in pathway analysis, currently supported are subs
 For detailed subcategories included in the default pathway analysis see either
 `snakemake/data/csv` files or `snakemake/utilities/export_structures.R`
 
+
+### Input description
+
 #### id_column_name
 Name of the gene ID column in the differential expression file
 
@@ -81,26 +90,74 @@ volcano plots.
 #### pval_column_name
 Name of the adjusted p-value column in the differential expression file
 
-#### gene_fc_threshold
 
+### Analysis parameters
+
+#### gene_fc_threshold
+Gene log2 Fold-Change differential expression threshold for ORA.
+Program will only consider genes above the specified threshold. Usually set to
+0.58, which roughly corresponds to 1.5 times increase in expression
 
 #### gene_padj_threshold
-
+Threshold for adjusted p-value of differentially expressed genes for ORA. Only
+genes with value lower than threshold will be considered for analysis. Usually
+set to 0.05.
 
 #### enrich_minGS
+Minimal number of genes in pathway for ORA. Pathways with lower amount of genes
+will be omitted from analysis. Usually set to 5-10.
+
 #### enrich_maxGS
+Maximum number of genes in pathway for ORA. Pathways with higher amount of genes
+will be omitted from analysis. Usually set to around 500.
+
 #### enrich_pval_cutoff
+Minimal p-value threshold for over-represented pathways analyzed by ORA.
+
 #### go_simplify_cutoff
-#### gse_nperm
+Cutoff value to simplify redundant terms from Gene Ontology analysis based on
+semantic similarity. See [clusterProfiler vignette](https://yulab-smu.top/biomedical-knowledge-mining-book/useful-utilities.html?#reduce-redundancy-of-enriched-go-terms) for more detailed explanation.
+
 #### gse_minGS
+Minimal number of genes in pathway for GSEA. Pathways with lower amount of genes
+will be omitted from analysis. Usually set to 5-10.
+
 #### gse_maxGS
+Maximum number of genes in pathway for GSEA. Pathways with higher amount of genes
+will be omitted from analysis. Usually set to around 500.
+
 #### gse_pval_cutoff
+Minimal p-value threshold for over-represented pathways analyzed by GSEA.
+
 #### min_set_size
+In case of multiple contrasts, clusterProfiler will analyse them seperately as
+well as their unions, differences and intersections. Min_set_size deteremines the
+minimum amount of genes such subset must have in order to appear in the summary
+Upset plot.
+
+### Graphing parameters
+clusterProfiler has several visualisations availabe for enrichment results, please
+see the [vignette](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html)
+for detailed information.
+
+
 #### dotplot: categories
+Maximum number of pathways/rows shown in the dotplot.
+
 #### networkplot: categories
+Maximum number of pathway nodes shown in the network plot. All genes in the pathway
+will be shown.
+
 #### heatplot: categories
+Maximum number of pathways/rows shown in the heatmap plot.
+
 #### enrichmap: categories
+Maximum number of pathway nodes shown in the plot depicting pathway enrichment and
+similarities through common genes.
+
 #### table: hide_columns
+Hide columns in the summary table.
+
 
 ## Utilities
 There are several utilities included with the program in the `snakemake/utilities` folder
