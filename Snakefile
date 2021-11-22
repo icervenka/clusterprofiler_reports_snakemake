@@ -18,7 +18,7 @@ except OSError as e:
     print(e)
 
 Metadata = pd.read_table(config["metadata"])
-types = config["clusterProfiler"]["types"]
+types = config["types"]
 if len(pd.unique(Metadata.contrast)) == 1:
     templates = ['contrast']
 else:

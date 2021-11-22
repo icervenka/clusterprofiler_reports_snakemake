@@ -1,6 +1,5 @@
 metadata: "metadata.tsv"
 species: "mouse"
-threads: 15
 create_archive: "yes"
 
 # should the html output be self contained or have a separate lib directory
@@ -21,7 +20,7 @@ types:
 # name of the gene ID column in the deg file
 id_column_name: "ENSEMBL"
 # type of ID column in the deg file
-# Can be one of supported by org.db
+# Must be one of supported by org.db
 id_type: "ENSEMBL"
 fc_column_name: "log2FoldChange"
 padj_column_name: "padj"
@@ -34,7 +33,8 @@ enrich_minGS: 10
 enrich_maxGS: 200
 enrich_pval_cutoff: 0.05
 go_simplify_cutoff: 0.7
-gse_nperm: 10000
+# deprecated
+# gse_nperm: 10000
 gse_minGS: 10
 gse_maxGS: 200
 gse_pval_cutoff: 0.25

@@ -28,7 +28,7 @@ for detailed introduction how to run the program.
 A text based file containing the output of a gene differential expression analysis must contain the following columns:
   - gene identifier, must be one of supported by org.db
   - log2 fold-change expression values
-  - corresponding p-values or adjusted p-values 
+  - corresponding p-values or adjusted p-values
 
 ## Output
 Program creates an output directory with three subdirectories.
@@ -180,5 +180,6 @@ please see the `pathways2heatmaps.R --help` for description.
 ## Issues
 This program is still under development with new features and pathway collections being added.
 Clustercompare feature comparing pathway analysis between different contrasts coming soon!
+Displaying the reports on screens with small resolutions (eg. laptops) is suboptimal.
 
 ## Dependencies
