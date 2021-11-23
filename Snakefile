@@ -12,6 +12,12 @@ include: "snakemake/rules/functions.smk"
 configfile: "config.yaml"
 # validate(config, schema="snakemake/schema/config.schema.yaml")
 
+
+try:
+    os.mkdir(OUTPUT_DIR)
+except OSError as e:
+    print(e)
+
 try:
     os.mkdir(CSV_OUTDIR)
 except OSError as e:

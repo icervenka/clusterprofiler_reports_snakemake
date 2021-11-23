@@ -548,7 +548,7 @@ filter_data = function(data,
                        padj_column = "padj",
                        padj_threshold = 0.05,
                        fc_column = "log2FoldChange",
-                       fc_threshold = 0.6) {
+                       fc_threshold = 0.585) {
   data %>%
     dplyr::filter(!!as.symbol(padj_column) < padj_threshold) %>%
     dplyr::filter(abs(!!as.symbol(fc_column)) > fc_threshold)
@@ -656,15 +656,25 @@ create_subpage_data = function(expr_data, sp_info, params) {
 
   geneList = structure(expr_data[, fc_column_name], names = as.character(expr_data[, select_entrez_id])) %>%
     sort(decreasing = T)
+  geneList = filter_gene_list(geneList, params$gene_set)
+  
+  # if (length(filter_gene_list(geneList, params$gene_set)) < 1) {
+  #   return(NULL)
+  # }
 
-  if (length(filter_gene_list(geneList, params$gene_set)) < 1) {
+  if (length(geneList) < 1) {
     return(NULL)
   }
 
   # Generate enrichResult or gseaResult dataframe to pass as data to subpage
-  df = get_wrapper(params$type, params$analysis)(filter_gene_list(geneList, params$gene_set),
-                                                 params$category,
-                                                 sp_info)
+  tryCatch({
+    df = get_wrapper(params$type, params$analysis)(geneList,
+                                                   params$category,
+                                                   sp_info)
+  }, error = function(e) {
+    df = NULL
+  })
+  
   if (nrow(data.frame(df)) == 0 | is.null(df)) {
     return(NULL)
   }
