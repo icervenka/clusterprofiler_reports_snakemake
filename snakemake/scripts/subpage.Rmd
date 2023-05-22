@@ -2,6 +2,8 @@
 `r shiny::tags$h2(subpage_heading, style="text-align:left")`
 
 ```{r process, include=F}
+tags$head(tags$style(HTML(".small-box {height: 50px}")))
+
 gene_palette = "RdBu"
 pal_lmh = colorRampPalette(brewer.pal(n = 9, name = gene_palette))(3)
 pathway_palette = viridis
