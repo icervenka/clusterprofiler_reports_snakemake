@@ -186,7 +186,7 @@ pathway_table %>%
  
 ### Plot legends
 ```{r fig.width=10, fig.height=1, out.height="100%"}
-plot_grid(
+cowplot::plot_grid(
   create_legend(
     network_data$nodes %>% dplyr::filter(group != "process") %>% pull(value),
     gene_palette,

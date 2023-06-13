@@ -1,3 +1,5 @@
+pandoc_path: "/usr/lib/rstudio-server/bin/quarto/bin/tools"
+
 metadata: "metadata.tsv"
 species: "mouse"
 create_archive: "yes"

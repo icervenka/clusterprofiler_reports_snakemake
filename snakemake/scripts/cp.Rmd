@@ -40,32 +40,32 @@ if (template == "contrast") {
 Column {.tabset .tabset-fade data-width=225}
 -----------------------------------------------------------------------
 
-```{r child = 'description.Rmd', eval = T}
+```{r child = 'scripts/description.Rmd', eval = T}
 ```
 
 Column {data-width=275}
 -----------------------------------------------------------------------
 
-```{r child = 'volcano.Rmd', eval = T}
+```{r child = 'scripts/volcano.Rmd', eval = T}
 ```
 
 <!-- conditional evaluation of graph based on whether it's set or contrast -->
-```{r child = 'venn.Rmd', eval = !set_overview}
+```{r child = 'scripts/venn.Rmd', eval = !set_overview}
 ```
 
-```{r child = 'venn.Rmd', eval = set_overview}
+```{r child = 'scripts/venn.Rmd', eval = set_overview}
 ```
 
 Column {data-width=150}
 -----------------------------------------------------------------------
 
-```{r child = 'valuebox_info.Rmd', eval = T}
+```{r child = 'scripts/valuebox_info.Rmd', eval = T}
 ```
 
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-```{r child = 'gene_expr.Rmd', eval = T}
+```{r child = 'scripts/gene_expr.Rmd', eval = T}
 ```
 
 <!-- export pathway data to csv -->

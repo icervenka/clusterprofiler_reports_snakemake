@@ -697,7 +697,7 @@ create_subpage_data = function(expr_data, sp_info, params) {
   ))
 }
 
-create_subpage_markdown = function(subpage_data, subpage_markdown = 'subpage.Rmd') {
+create_subpage_markdown = function(subpage_data, subpage_markdown = 'scripts/subpage.Rmd') {
   # Create temporary environment which we use for knitting subpages.RMD
   subpage_env <- new.env()
 
