@@ -36,7 +36,8 @@ rule cp:
         networkplot_categories=config["networkplot"]["categories"],
         heatplot_categories=config["heatplot"]["categories"],
         emapplot_categories=config["enrichmap"]["categories"],
-        hide_columns=config["table"]["hide_columns"]
+        hide_columns=config["table"]["hide_columns"],
+        pandoc_path=config["pandoc_path"]
     script:
         "../scripts/cp.R"
 

@@ -12,6 +12,8 @@ uniprot = read.table(paste0(data_basepath, "uniprot_keywords_db.tab"),
                   stringsAsFactors = F)
 
 # snakemake common parameters --------------------------------------------------
+rmarkdown::find_pandoc(dir = snakemake@params[["pandoc_path"]])
+
 input_contrast = snakemake@params[['contrast']]
 input_dir = snakemake@params[['input_dir']]
 report_outdir = snakemake@params['report_outdir']

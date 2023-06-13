@@ -10,11 +10,10 @@ suppressPackageStartupMessages(library(enrichplot))
 suppressPackageStartupMessages(library(ReactomePA))
 suppressPackageStartupMessages(library(msigdbr))
 suppressPackageStartupMessages(library(meshes))
-suppressPackageStartupMessages(library(MeSH.Hsa.eg.db))
-suppressPackageStartupMessages(library(MeSH.Mmu.eg.db))
+suppressPackageStartupMessages(library(AnnotationHub))
+suppressPackageStartupMessages(library(MeSHDbi))
 suppressPackageStartupMessages(library(org.Hs.eg.db))
 suppressPackageStartupMessages(library(org.Mm.eg.db))
-# suppressPackageStartupMessages(library(MeSH.Rno.eg.db))
 
 # analysis functions  ----------------------------------------------------------
 get_wrapper = function(type, analysis) {
@@ -212,7 +211,7 @@ gseaMSIG_wrapper = function(list, category, species) {
     subcategory = NULL
   }
 
-  db = msigdbr(species = species[["full_name"]] ,
+  db = msigdbr(species = species[["full_name"]],
                category = category_split[1],
                subcategory = subcategory) %>%
     dplyr::select(gs_name, entrez_gene)
@@ -227,7 +226,7 @@ gseaMSIG_wrapper = function(list, category, species) {
 enrichMESH_wrapper = function(list, category, species) {
   category_split = unlist(strsplit(category, "@", fixed = T))
   df = enrichMeSH(names(list),
-                  MeSHDb        = species[["meshdb"]],
+                  MeSHDb        = get_mesh_dbi(species),
                   database      = category_split[2],
                   category      = category_split[1],
                   pvalueCutoff  = enrich_pval_cutoff,
@@ -239,7 +238,7 @@ enrichMESH_wrapper = function(list, category, species) {
 gseaMESH_wrapper = function(list, category, species) {
   category_split = unlist(strsplit(category, "@", fixed = T))
   df = gseMeSH(list,
-               MeSHDb        = species[["meshdb"]],
+               MeSHDb        = get_mesh_dbi(species),
                database      = category_split[2],
                category      = category_split[1],
 #               nPerm         = gse_nperm,

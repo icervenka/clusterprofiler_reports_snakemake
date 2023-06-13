@@ -254,6 +254,13 @@ get_species_info = function(species_identifier) {
   return(sp_arr)
 }
 
+get_mesh_dbi = function(species) {
+  ah <- AnnotationHub(localHub = TRUE)
+  ah_query <- query(ah, c("MeSHDb", species[["full_name"]]))
+  db <- MeSHDbi::MeSHDb(ah_query[[1]])
+  return(db)
+}
+
 # graph functions  -------------------------------------------------------------
 palette_to_hex = function(palette = "RdBu", no_colors = 100, rev = F) {
   if(typeof(palette) == "closure") {
@@ -768,6 +775,7 @@ create_pathway_csv = function(subpage_data, template, path) {
 
 # TODO uses fc to order, might be useful to use custom ordering
 # TODO add knitr options
+
 run_cp = function(data, sp_info, payloads, template, outdir, output_opts = list()) {
   map(payloads$type %>% unique, function(x, data, sp_info) {
     payloads_sub = payloads %>% dplyr::filter(type == x)
