@@ -1,14 +1,6 @@
 #!/usr/bin/Rscript
 
-# imports ----------------------------------------------------------------------------------
-suppressPackageStartupMessages(library(rmarkdown))
-suppressPackageStartupMessages(library(htmltools))
-suppressPackageStartupMessages(library(flexdashboard))
-suppressPackageStartupMessages(library(DT))
-suppressPackageStartupMessages(library(plotly))
-suppressPackageStartupMessages(library(ComplexHeatmap))
-suppressPackageStartupMessages(library(tidyverse))
-
+source("snakemake/scripts/load_packages.R", local = TRUE)
 source("snakemake/scripts/functions.R")
 source("snakemake/scripts/wrappers.R")
 

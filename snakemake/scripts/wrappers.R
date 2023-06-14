@@ -2,18 +2,6 @@
 # arguments. The wrappers present the same interface, so they are more easily
 # used in loops.
 
-
-suppressPackageStartupMessages(library(clusterProfiler))
-suppressPackageStartupMessages(library(DOSE))
-suppressPackageStartupMessages(library(enrichplot))
-suppressPackageStartupMessages(library(ReactomePA))
-suppressPackageStartupMessages(library(msigdbr))
-suppressPackageStartupMessages(library(meshes))
-suppressPackageStartupMessages(library(AnnotationHub))
-suppressPackageStartupMessages(library(MeSHDbi))
-suppressPackageStartupMessages(library(org.Hs.eg.db))
-suppressPackageStartupMessages(library(org.Mm.eg.db))
-
 # analysis functions  ----------------------------------------------------------
 get_wrapper <- function(type, analysis) {
   function_map <- list(
