@@ -10,11 +10,11 @@ output:
 ```{r setup}
 # TODO add abbreviated input contrast to page name
 # Set knitr options to allow duplicate labels (needed for the subpages)
-options(knitr.duplicate.label = 'allow')
+options(knitr.duplicate.label = "allow")
 knitr::opts_knit$set(root.dir = normalizePath(".."))
 
-all_cp = map(
-  split(payloads_sub, 1:nrow(payloads_sub)) %>% unname %>% map( ~ c(.x)),
+all_cp <- map(
+  split(payloads_sub, 1:nrow(payloads_sub)) %>% unname() %>% map(~ c(.x)),
   ~ do.call(
     create_subpage_data,
     list(
@@ -26,10 +26,10 @@ all_cp = map(
 )
 
 if (template == "contrast") {
-  set_overview = FALSE
+  set_overview <- FALSE
 } else {
-  input_contrast = outdir
-  set_overview = TRUE
+  input_contrast <- outdir
+  set_overview <- TRUE
 }
 ```
 
@@ -71,20 +71,24 @@ Column {data-width=350}
 <!-- export pathway data to csv -->
 ```{r include = F, eval = T}
 # TODO figure out why the root is in snakemake dir
-csv_path = paste0("../", csv_outdir, outdir, "/")
+csv_path <- paste0("../", csv_outdir, outdir, "/")
 dir.create(csv_path, showWarnings = F)
-map_if(all_cp,
-       is.not.empty.list,
-       ~ create_pathway_csv(.x, template, csv_path),
-       .else = NULL)
+map_if(
+  all_cp,
+  is.not.empty.list,
+  ~ create_pathway_csv(.x, template, csv_path),
+  .else = NULL
+)
 ```
 
 <!-- render subpages with pathway data -->
 ```{r include = F, eval = T}
-out = map_if(all_cp,
-             is.not.empty.list,
-             ~ create_subpage_markdown(.x),
-             .else = "")
+out <- map_if(
+  all_cp,
+  is.not.empty.list,
+  ~ create_subpage_markdown(.x),
+  .else = ""
+)
 ```
 
 `r paste(knitr::knit_child(text = out), collapse = '')`
