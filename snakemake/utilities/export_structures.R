@@ -2,10 +2,15 @@
 ### List type enumeration of analyses to be performed that can be exported as csv
 ### files to be read by clusterProfiler report script
 
-export_structures = function(s, path) {
-  df = map_dfr(s, function(x) as.data.frame(x, stringsAsFactors = F))
-  map(df$type %>% unique, function(x) {
-    write.csv(df %>% dplyr::filter(type == x), paste0(path, x,".csv"), quote = F, row.names = F)
+export_structures <- function(s, path) {
+  df <- map_dfr(s, function(x) as.data.frame(x, stringsAsFactors = F))
+  map(df$type %>% unique(), function(x) {
+    write.csv(
+      df %>% dplyr::filter(type == x),
+      paste0(path, x, ".csv"),
+      quote = F,
+      row.names = F
+    )
   })
 }
 
@@ -26,7 +31,7 @@ export_structures = function(s, path) {
 # Enrichment Browser:
 
 
-analysis_structure = list(
+analysis_structure <- list(
   list(
     "type" = "Disease",
     "category" = "DO",
@@ -233,12 +238,14 @@ analysis_structure = list(
   )
 )
 
-args = commandArgs(trailingOnly=TRUE)
+args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args) == 0) {
-  stop("The export path of the structures has to be specified as an argument.", call.=FALSE)
-} elif (length(args) > 1) {
-  stop("Too many commandline arguments specified.", call.=FALSE)
+  stop("The export path of the structures has to be specified as an argument.",
+    call. = FALSE
+  )
+} else if (length(args) > 1) {
+  stop("Too many commandline arguments specified.", call. = FALSE)
 }
 
 export_structures(analysis_structure, args[1])
