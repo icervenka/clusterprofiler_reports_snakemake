@@ -4,30 +4,34 @@
 ```{r process, include=F}
 tags$head(tags$style(HTML(".small-box {height: 50px}")))
 
-gene_palette = "RdBu"
-pal_lmh = colorRampPalette(brewer.pal(n = 9, name = gene_palette))(3)
-pathway_palette = viridis
-no_colors = 100
+gene_palette <- "RdBu"
+pal_lmh <- colorRampPalette(brewer.pal(n = 9, name = gene_palette))(3)
+pathway_palette <- viridis
+no_colors <- 100
 
-pathway_table = cp_to_df(subpage_df)
+pathway_table <- cp_to_df(subpage_df)
 
 if (class(subpage_df)[1] == "gseaResult") {
-  num_genes = length(lapply(
+  num_genes <- length(lapply(
     data.frame(pathway_table)$core_enrichment,
     strsplit,
     split = "/"
-  ) %>% unlist %>% unique)
-  order_by = "NES"
+  ) %>% unlist() %>% unique())
+  order_by <- "NES"
 } else {
-  num_genes = length(lapply(data.frame(pathway_table)$geneID, strsplit, split = "/") %>% unlist %>% unique)
-  order_by = "GeneRatio"
+  num_genes <- length(
+    lapply(data.frame(pathway_table)$geneID, strsplit, split = "/") %>%
+      unlist() %>%
+      unique()
+  )
+  order_by <- "GeneRatio"
 }
 
-num_categories = nrow(pathway_table)
-hide_table_cols = (match(hide_columns, names(pathway_table)) %>% na.omit) - 1
+num_categories <- nrow(pathway_table)
+hide_table_cols <- (match(hide_columns, names(pathway_table)) %>% na.omit()) - 1
 
 # TODO sometimes truncated version has same name after
-subpage_df_trunc = subpage_df %>%
+subpage_df_trunc <- subpage_df %>%
   clusterProfiler::mutate(Description = stringr::str_trunc(Description, 43))
 ```
 
@@ -70,13 +74,17 @@ Column {.tabset .tabset-fade data-width=450}
 -----------------------------------------------------------------------
 ### Network plot
 ```{r fig.width=10, fig.height=9, out.width="100%", out.height="100%"}
-network_data = create_networkplot_data(subpage_df, geneList, pathway_categories = networkplot_categories)
+network_data <- create_networkplot_data(
+  subpage_df,
+  geneList,
+  pathway_categories = networkplot_categories
+)
 
-gene_node_type = network_data$nodes %>%
+gene_node_type <- network_data$nodes %>%
   dplyr::filter(group != "process") %>%
   dplyr::select(group) %>%
-  pull %>%
-  as.numeric
+  pull() %>%
+  as.numeric()
 
 forceNetwork(
   Links = network_data$edges,
@@ -106,23 +114,33 @@ forceNetwork(
 
 ### Heatplot/Leading edge analysis
 ```{r fig.width=10, fig.height=9}
-if(class(subpage_df)[1] == "gseaResult") {
-  show_plots = min(15, nrow(pathway_table))
-  grobs = map(1:show_plots, function(x) {
+if (class(subpage_df)[1] == "gseaResult") {
+  show_plots <- min(15, nrow(pathway_table))
+  grobs <- map(1:show_plots, function(x) {
     gseaplot2(subpage_df, geneSetID = x, subplots = 1:2)
   })
-  null_plots = vector(mode = "list", length = (15 - show_plots))
-  grobs = c(grobs, null_plots)
+  null_plots <- vector(mode = "list", length = (15 - show_plots))
+  grobs <- c(grobs, null_plots)
   cowplot::plot_grid(
     plotlist = grobs,
     ncol = 3,
-    labels = paste0(paste(rep(" ", 12), collapse = ""), subpage_df$Description[1:show_plots]),
+    labels = paste0(
+      paste(
+        rep(" ", 12),
+        collapse = ""
+      ),
+      subpage_df$Description[1:show_plots]
+    ),
     label_size = 8,
     hjust = 0
   )
 } else {
   (
-    heatplot(subpage_df, foldChange = geneList, showCategory = heatplot_categories) +
+    heatplot(
+      subpage_df,
+      foldChange = geneList,
+      showCategory = heatplot_categories
+    ) +
       scale_fill_gradient2(
         low = pal_lmh[1],
         mid = pal_lmh[2],
@@ -141,7 +159,10 @@ if(class(subpage_df)[1] == "gseaResult") {
 
 ### Enrichment map
 ```{r fig.width=10, fig.height=8}
-emap_data = create_emapplot_data(subpage_df, pathway_categories = emapplot_categories)
+emap_data <- create_emapplot_data(
+  subpage_df,
+  pathway_categories = emapplot_categories
+)
 
 forceNetwork(
   Links = emap_data$edges,
@@ -200,10 +221,9 @@ cowplot::plot_grid(
     symmetric = F,
     rev = T
   ),
-  labels = c('   Gene expression (log2 fold-change)', '   Pathway p-value'),
+  labels = c("   Gene expression (log2 fold-change)", "   Pathway p-value"),
   label_size = 12,
   hjust = 0,
   vjust = 1
 )
 ```
-

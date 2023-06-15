@@ -1,24 +1,29 @@
 ### Venn Diagram
 
 ```{r fig.height=5, fig.width=8}
-m = get_upset_list(all_data, id_type = "ENTREZID") %>%
-    make_comb_mat()
+m <- get_upset_list(all_data, id_type = "ENTREZID") %>%
+  make_comb_mat()
 
-if(set_overview == TRUE) {
-  current_set = set_contrast_to_comb_string(input_contrast, m)
+if (set_overview == TRUE) {
+  current_set <- set_contrast_to_comb_string(input_contrast, m)
 } else {
-  min_set_size = 0
-  current_set = ""
+  min_set_size <- 0
+  current_set <- ""
 }
 
-m = m[comb_size(m) >= min_set_size]
-cs = comb_size(m)
-cd = comb_degree(m)
-UpSet(m, 
-      comb_order = order(cd, -cs),
-      comb_col = ifelse(comb_name(m) == current_set, viridis(3)[2], "#000000"),
-      pt_size = unit(5, "mm"), 
-      lwd = 3,
-      height = unit(length(set_size(m))/1.25, "cm"),
-      top_annotation = upset_top_annotation(m, annotation_name_rot = 90, height = unit(7, "cm")))
+m <- m[comb_size(m) >= min_set_size]
+cs <- comb_size(m)
+cd <- comb_degree(m)
+UpSet(m,
+  comb_order = order(cd, -cs),
+  comb_col = ifelse(comb_name(m) == current_set, viridis(3)[2], "#000000"),
+  pt_size = unit(5, "mm"),
+  lwd = 3,
+  height = unit(length(set_size(m)) / 1.25, "cm"),
+  top_annotation = upset_top_annotation(
+    m,
+    annotation_name_rot = 90,
+    height = unit(7, "cm")
+  )
+)
 ```

@@ -17,7 +17,8 @@ meta <- read.table(metadata, header = T, stringsAsFactors = F)
 data <- input_file %>%
   load_data(get_species_info(species),
     id_column_name = id_column_name,
-    id_type = id_type)
+    id_type = id_type
+  )
 
 all_data <- paste0(snakemake@params[["input_dir"]], meta$file) %>%
   map(~ load_data(
@@ -47,7 +48,8 @@ run_cp(
   payloads,
   template,
   input_contrast,
-  output_opts = knitr_output_options)
+  output_opts = knitr_output_options
+)
 
 # run analysis upset unique set ------------------------------------------------
 # only run if there is more than one contrast

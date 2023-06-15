@@ -283,7 +283,6 @@ enrichPathways_wrapper <- function(list, category, species) {
   }
 
   enrichWiki_wrapper <- function(list, category, species) {
-    suppressPackageStartupMessages(library(rWikiPathways))
     wiki_archive <- downloadPathwayArchive(
       organism = species[["full_name"]],
       format = "gmt"
@@ -380,7 +379,6 @@ gseaPathways_wrapper <- function(list, category, species) {
   }
 
   gseaWiki_wrapper <- function(list, category, species) {
-    suppressPackageStartupMessages(library(rWikiPathways))
     wiki_archive <- downloadPathwayArchive(
       organism = species["full_name"],
       format = "gmt"

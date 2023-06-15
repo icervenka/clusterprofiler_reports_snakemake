@@ -1,18 +1,22 @@
 ### Volcano plot
 
 ```{r fig.height=5, fig.width=8}
-p = data %>%
+p <- data %>%
   dplyr::mutate(significant = !!as.symbol(padj_column_name) < gene_padj_threshold) %>%
-  ggplot(aes(x = !!as.symbol(fc_column_name), 
-             y = -log10(pvalue), 
-             color = significant,
-             text = SYMBOL)) +
+  ggplot(
+    aes(
+      x = !!as.symbol(fc_column_name),
+      y = -log10(pvalue),
+      color = significant,
+      text = SYMBOL
+    )
+  ) +
   geom_point() +
-  scale_color_manual(values = c("FALSE" = "grey80", "TRUE" = viridis(1))) + 
-  theme_bw() + 
+  scale_color_manual(values = c("FALSE" = "grey80", "TRUE" = viridis(1))) +
+  theme_bw() +
   theme(legend.position = "bottom")
 
 p %>%
   ggplotly(tooltip = "text") %>%
-  toWebGL
+  toWebGL()
 ```
