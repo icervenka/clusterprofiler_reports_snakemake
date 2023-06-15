@@ -1,4 +1,7 @@
+# dbplyr causes some problems when loaded in wrong order in conda environments
+
 pkgs <- c(
+    "dbplyr",
     "clusterProfiler",
     "rmarkdown",
     "htmltools",

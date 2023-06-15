@@ -28,7 +28,6 @@ rule cp:
         enrich_maxGS=config["enrich_maxGS"],
         enrich_pval_cutoff=config["enrich_pval_cutoff"],
         min_set_size=config["min_set_size"],
-        #gse_nperm=config["gse_nperm"],
         gse_minGS=config["gse_minGS"],
         gse_maxGS=config["gse_maxGS"],
         gse_pval_cutoff=config["gse_pval_cutoff"],
@@ -38,6 +37,8 @@ rule cp:
         emapplot_categories=config["enrichmap"]["categories"],
         hide_columns=config["table"]["hide_columns"],
         pandoc_path=config["pandoc_path"]
+    conda:
+        "../envs/clusterprofiler_reports.yml"
     script:
         "../scripts/cp.R"
 
