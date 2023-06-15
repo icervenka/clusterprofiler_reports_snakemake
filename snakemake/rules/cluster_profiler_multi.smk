@@ -27,10 +27,10 @@ rule cp_multi:
         gse_minGS=config["gse_minGS"],
         gse_maxGS=config["gse_maxGS"],
         gse_pval_cutoff=config["gse_pval_cutoff"],
-        dotplot_categories=config["dotplot"]["categories"],
-        networkplot_categories=config["networkplot"]["categories"],
-        heatplot_categories=config["heatplot"]["categories"],
-        emapplot_categories=config["enrichmap"]["categories"],
+        dotplot_categories=config["max_categories"]["dotplot"],
+        networkplot_categories=config["max_categories"]["networkplot"],
+        heatplot_categories=config["max_categories"]["heatplot"],
+        emapplot_categories=config["max_categories"]["enrichmap"],
         hide_columns=config["table"]["hide_columns"],
         pandoc_path=config["pandoc_path"]
     conda:

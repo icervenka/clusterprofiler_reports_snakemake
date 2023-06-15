@@ -1,3 +1,4 @@
+# path to pandoc executable on your system
 pandoc_path: "/usr/lib/rstudio-server/bin/quarto/bin/tools"
 
 metadata: "metadata.tsv"
@@ -7,6 +8,7 @@ create_archive: "yes"
 # should the html output be self contained or have a separate lib directory
 # separate lib directory saves space, but individual html files can't be shared
 self_contained: FALSE
+
 # any combination of:
 # Disease, GeneOntology, MSigDB, MSigDB_cancer, MeSH_g2p, MeSH_gendoo,
 # Pathways, ConsensusPathDB
@@ -19,38 +21,43 @@ types:
   - "MeSH_gendoo"
   - "Pathways"
   - "ConsensusPathDB"
+
 # name of the gene ID column in the deg file
 id_column_name: "ENSEMBL"
+
 # type of ID column in the deg file
 # Must be one of supported by org.db
 id_type: "ENSEMBL"
+
+# other column names needed for clusterProfiler analysis
 fc_column_name: "log2FoldChange"
 padj_column_name: "padj"
 pval_column_name: "pvalue"
+
 # fc and adjusted pvalue filtering of input data
 gene_fc_threshold: 0.585
 gene_padj_threshold: 0.05
+
 # parameters for cluster profiler enrich and gse family of functions
 enrich_minGS: 10
 enrich_maxGS: 200
 enrich_pval_cutoff: 0.05
 go_simplify_cutoff: 0.7
-# deprecated
-# gse_nperm: 10000
 gse_minGS: 10
 gse_maxGS: 200
 gse_pval_cutoff: 0.25
+
 # minimum number of genes in individual unique upset sets for analysis
 min_set_size: 50
+
 # max number of categories shown in plots
-dotplot:
-  categories: 40
-networkplot:
-  categories: 20
-heatplot:
-  categories: 20
-enrichmap:
-  categories: 35
+max_categories:
+  dotplot: 40
+  networkplot: 20
+  heatplot: 20
+  enrichmap: 35
+
+
 # hide columns from clusterProfiler table output
 table:
   hide_columns: ["BgRatio", "qvalue", "qvalues", "leading_edge"]

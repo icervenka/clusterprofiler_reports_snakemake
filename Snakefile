@@ -10,7 +10,7 @@ min_version("5.7.0")
 include: "snakemake/rules/common.smk"
 include: "snakemake/rules/functions.smk"
 configfile: "config.yaml"
-# validate(config, schema="snakemake/schema/config.schema.yaml")
+validate(config, schema="snakemake/schema/config.schema.yaml")
 
 
 try:
@@ -24,12 +24,14 @@ except OSError as e:
     print(e)
 
 Metadata = pd.read_table(config["metadata"])
+validate(Metadata, schema="snakemake/schema/metadata.schema.yaml")
+
 types = config["types"]
 if len(pd.unique(Metadata.contrast)) == 1:
     templates = ['contrast']
 else:
     templates = ['contrast', 'unique']
-# validate(Metadata, schema="snakemake/schema/metadata.schema.yaml")
+
 
 include: "snakemake/rules/cluster_profiler.smk"
 
@@ -41,6 +43,8 @@ else:
 include: "snakemake/rules/create_archive.smk"
 
 # TODO add ridgeplots and upset plot
+# TODO fix the overwriting color warning
+# TODO fix the ggplotly warning
 # TODO clustercompare
 # TODO explore new ggplot graphs
 # TODO enrichr libraries https://maayanlab.cloud/Enrichr/#libraries

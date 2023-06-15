@@ -3,61 +3,103 @@ $schema: "http://json-schema.org/draft-04/schema#"
 description: snakemake configuration file
 
 type: object
-
 properties:
+
+  pandoc_path:
+    type: string
+
   metadata:
     type: string
-
   species:
     type: string
+  create_archive:
+    type: string
+    default: "yes"
 
-  threads:
+  self_contained:
+    type: boolean
+  
+  types:
+    type: array
+    items:
+      type: string
+  
+  id_column_name:
+    type: string
+  
+  id_type:
+    type: string
+  
+  fc_column_name:
+    type: string
+  pval_column_name:
+    type: string
+  padj_column_name:
+    type: string
+
+  gene_fc_threshold:
+    type: number
+    default: 0.585
+  gene_padj_threshold:
+    type: number
+    default: 0.05
+  
+  enrich_minGS:
     type: integer
+    default: 10
+  enrich_maxGS:
+    type: integer
+    default: 200
+  enrich_pval_cutoff:
+    type: number
+    default: 0.05
+  go_simplify_cutoff:
+    type: number
+    default: 0.7
+  gse_minGS:
+    type: integer
+    default: 10
+  gse_maxGS:
+    type: integer
+    default: 200
+  gse_pval_cutoff:
+    type: number
+    default: 0.25
 
-  clusterProfiler:
+  min_set_size:
+    type: integer
+    default: 50
+
+  max_categories:
     type: object
     properties:
-      self_contained:
-        type: boolean
-      types:
-        type: object
-      id_column_name:
-        type: string
-      fc_column_name:
-        type: string
-      padj_column_name:
-        type: string
-      pvalue_column_name:
-        type: string
-      gene_fc_threshold:
-        type: string
-      gene_padj_threshold:
-        type: string
-      enrich_minGS:
-        type: string
-      enrich_maxGS:
-        type: string
-      enrich_pval_cutoff:
-        type: string
-      gse_nperm:
-        type: string
-      gse_minGS:
-        type: string
-      gse_maxGS:
-        type: string
-      enrich_pval_cutoff:
-        type: string
-      enrich_pval_cutoff:
-        type: string
-      enrich_pval_cutoff:
-        type: string
+      dotplot:
+        type: integer
+        default: 40
+      networkplot:
+        type: integer
+        default: 20
+      heatplot:
+        type: integer
+        default: 20
+      enrichmap:
+        type: integer
+        default: 35
+
+table:
+  type: object
+  properties:
+    type: array
+    items:
+      type: string
 
 required:
-  - experiment_name
+  - pandoc_path
   - metadata
-  - index
-  - gtf
-  - threads
-  - count
-  - diffexp
-  - report
+  - species
+  - types
+  - id_column_name
+  - id_type
+  - fc_column_name
+  - padj_column_name
+  - pval_column_name
