@@ -88,7 +88,7 @@ analysis_structure <- list(
   ),
   list(
     "type" = "MSigDB",
-    "category" = "C3@TFT:GTRD",
+    "category" = "C3@TFT-GTRD",
     "heading" = "Transcription Factor Targets",
     "flavour_text" = ""
   ),

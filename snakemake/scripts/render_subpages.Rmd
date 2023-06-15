@@ -1,8 +1,8 @@
 <!-- renders all subpages from cp identified pathway data -->
 ```{r render_subpages, include=F}
 
-out = map(all_cp, function(x) {
-  if(!is.null(x)) {
+out <- map(all_cp, function(x) {
+  if (!is.null(x)) {
     create_subpage_markdown(x)
   }
 })

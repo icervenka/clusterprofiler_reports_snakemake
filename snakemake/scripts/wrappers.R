@@ -92,7 +92,6 @@ gseaDisease_wrapper <- function(list, category, species) {
   gseaDO_wrapper <- function(list, category, species) {
     df <- gseDO(
       list,
-      #  nPerm = gse_nperm,
       pvalueCutoff = gse_pval_cutoff,
       pAdjustMethod = "BH",
       minGSSize = gse_minGS,
@@ -106,7 +105,6 @@ gseaDisease_wrapper <- function(list, category, species) {
 
   gseaNCG_wrapper <- function(list, category, species) {
     df <- gseNCG(list,
-      # nPerm = gse_nperm,
       pvalueCutoff = gse_pval_cutoff,
       pAdjustMethod = "BH",
       minGSSize = gse_minGS,
@@ -120,7 +118,6 @@ gseaDisease_wrapper <- function(list, category, species) {
 
   gseaDGN_wrapper <- function(list, category, species) {
     df <- gseDGN(list,
-      # nPerm = gse_nperm,
       pvalueCutoff = gse_pval_cutoff,
       pAdjustMethod = "BH",
       minGSSize = gse_minGS,
@@ -166,7 +163,6 @@ gseaGO_wrapper <- function(list, category, species) {
     geneList = list,
     OrgDb = eval(parse(text = species[["orgdb"]])),
     ont = category,
-    # nPerm = gse_nperm,
     pvalueCutoff = gse_pval_cutoff,
     minGSSize = gse_minGS,
     maxGSSize = gse_maxGS,
@@ -223,7 +219,6 @@ gseaMSIG_wrapper <- function(list, category, species) {
   df <- GSEA(
     list,
     TERM2GENE = db,
-    # nPerm = gse_nperm,
     pvalueCutoff = gse_pval_cutoff,
     minGSSize = gse_minGS,
     maxGSSize = gse_maxGS
@@ -251,7 +246,6 @@ gseaMESH_wrapper <- function(list, category, species) {
     MeSHDb = get_mesh_dbi(species),
     database = category_split[2],
     category = category_split[1],
-    # nPerm = gse_nperm,
     pvalueCutoff = gse_pval_cutoff,
     minGSSize = gse_minGS,
     maxGSSize = gse_maxGS
@@ -283,23 +277,34 @@ enrichPathways_wrapper <- function(list, category, species) {
   }
 
   enrichWiki_wrapper <- function(list, category, species) {
-    wiki_archive <- downloadPathwayArchive(
-      organism = species[["full_name"]],
-      format = "gmt"
-    )
-    wp2gene <- read.gmt(wiki_archive)
-    if (file.exists(wiki_archive)) {
-      file.remove(wiki_archive)
-    }
-    wp2gene <- wp2gene %>%
-      tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
-    wpid2gene <- wp2gene %>% dplyr::select(wpid, gene) # TERM2GENE
-    wpid2name <- wp2gene %>% dplyr::select(wpid, name) # TERM2NAME
 
-    df <- enricher(
-      names(list),
-      TERM2GENE = wpid2gene,
-      TERM2NAME = wpid2name,
+
+    # wiki_archive <- downloadPathwayArchive(
+    #   organism = species[["full_name"]],
+    #   format = "gmt"
+    # )
+    # wp2gene <- read.gmt(wiki_archive)
+    # if (file.exists(wiki_archive)) {
+    #   file.remove(wiki_archive)
+    # }
+    # wp2gene <- wp2gene %>%
+    #   tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
+    # wpid2gene <- wp2gene %>% dplyr::select(wpid, gene) # TERM2GENE
+    # wpid2name <- wp2gene %>% dplyr::select(wpid, name) # TERM2NAME
+
+    # df <- enricher(
+    #   names(list),
+    #   TERM2GENE = wpid2gene,
+    #   TERM2NAME = wpid2name,
+    #   pvalueCutoff = enrich_pval_cutoff,
+    #   pAdjustMethod = "BH",
+    #   minGSSize = enrich_minGS,
+    #   maxGSSize = enrich_maxGS
+    # )
+    
+    df <- enrichWP(
+      names(list), 
+      organism = species[["full_name"]],
       pvalueCutoff = enrich_pval_cutoff,
       pAdjustMethod = "BH",
       minGSSize = enrich_minGS,
@@ -308,21 +313,6 @@ enrichPathways_wrapper <- function(list, category, species) {
   }
 
   enrichUniprot_wrapper <- function(list, category, species) {
-    # up <- UniProt.ws(species['tax'])
-    # all_keys = keys(up, "ENTREZ_GENE")
-    # res <- select(up, all_keys, columns = c("KEYWORDS"), keytype = "ENTREZ_GENE") %>%
-    #   na.omit
-    # # res <- select(up, keys = c("22627","22629"), columns = c("KEYWORDS"), keytype = "ENTREZ_GENE") %>%
-    # #   na.omit
-    # uniprot_db = uniprot_db %>%
-    #   separate_rows(KEYWORDS, sep = ";") %>%
-    #   group_by(KEYWORDS) %>%
-    #   mutate(group_id = match(KEYWORDS, unique(KEYWORDS)))
-    #
-    # term2gene = uniprot_db %>% dplyr::select(group_id, ENTREZ_GENE)
-    # term2name = uniprot_db %>% dplyr::select(group_id, KEYWORDS)
-
-    head(uniprot)
     term2gene <- uniprot %>%
       dplyr::filter(source_name == species[["abbreviation"]]) %>%
       dplyr::select(id, gene)
@@ -356,7 +346,6 @@ gseaPathways_wrapper <- function(list, category, species) {
     df <- gseKEGG(
       geneList = list,
       organism = species[["kegg"]],
-      # nPerm = gse_nperm,
       pvalueCutoff = gse_pval_cutoff,
       pAdjustMethod = "BH",
       minGSSize = gse_minGS,
@@ -369,7 +358,6 @@ gseaPathways_wrapper <- function(list, category, species) {
     df <- gsePathway(
       list,
       organism = species["common"],
-      #  nPerm = gse_nperm,
       pvalueCutoff = gse_pval_cutoff,
       pAdjustMethod = "BH",
       minGSSize = gse_minGS,
@@ -379,24 +367,31 @@ gseaPathways_wrapper <- function(list, category, species) {
   }
 
   gseaWiki_wrapper <- function(list, category, species) {
-    wiki_archive <- downloadPathwayArchive(
-      organism = species["full_name"],
-      format = "gmt"
-    )
-    wp2gene <- read.gmt(wiki_archive)
-    if (file.exists(wiki_archive)) {
-      file.remove(wiki_archive)
-    }
-    wp2gene <- wp2gene %>% 
-      tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
-    wpid2gene <- wp2gene %>% dplyr::select(wpid, gene) # TERM2GENE
-    wpid2name <- wp2gene %>% dplyr::select(wpid, name) # TERM2NAME
-
-    df <- GSEA(
+    # wiki_archive <- downloadPathwayArchive(
+    #   organism = species["full_name"],
+    #   format = "gmt"
+    # )
+    # wp2gene <- read.gmt(wiki_archive)
+    # if (file.exists(wiki_archive)) {
+    #   file.remove(wiki_archive)
+    # }
+    # wp2gene <- wp2gene %>% 
+    #   tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
+    # wpid2gene <- wp2gene %>% dplyr::select(wpid, gene) # TERM2GENE
+    # wpid2name <- wp2gene %>% dplyr::select(wpid, name) # TERM2NAME
+    # 
+    # df <- GSEA(
+    #   list,
+    #   TERM2GENE = wpid2gene,
+    #   TERM2NAME = wpid2name,
+    #   pvalueCutoff = gse_pval_cutoff,
+    #   minGSSize = gse_minGS,
+    #   maxGSSize = gse_maxGS
+    # )
+    
+    df <- gseWP(
       list,
-      TERM2GENE = wpid2gene,
-      TERM2NAME = wpid2name,
-      # nPerm = gse_nperm,
+      organism = species[["full_name"]],
       pvalueCutoff = gse_pval_cutoff,
       minGSSize = gse_minGS,
       maxGSSize = gse_maxGS
@@ -416,7 +411,6 @@ gseaPathways_wrapper <- function(list, category, species) {
       list,
       TERM2GENE = term2gene,
       TERM2NAME = term2name,
-      # nPerm = gse_nperm,
       pvalueCutoff = gse_pval_cutoff,
       minGSSize = gse_minGS,
       maxGSSize = gse_maxGS
@@ -476,7 +470,6 @@ gseaConsensusdb_wrapper <- function(list, category, species) {
     list,
     TERM2GENE = term2gene,
     TERM2NAME = term2name,
-    # nPerm = gse_nperm,
     pvalueCutoff = gse_pval_cutoff,
     minGSSize = gse_minGS,
     maxGSSize = gse_maxGS
