@@ -1,9 +1,5 @@
 ._*
 .snakemake/
-csv_bak/
-reports_bak/
-input/
-output/
-pathway_archive.tar.gz
-p2h/
-test/
+resources/input_files/
+results/
+workflow/test/

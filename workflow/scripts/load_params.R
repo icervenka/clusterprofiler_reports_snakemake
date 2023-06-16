@@ -2,7 +2,7 @@
 # scripts_basepath = "snakemaka/scripts"
 data_basepath <- "snakemake/data/"
 cpdb <- read.table(
-  paste0(data_basepath, "CPDB_pathways_genes.tab"),
+  paste0(data_basepath, "CPDB_pathways_genes_entrez.tab"),
   sep = "\t",
   header = T,
   stringsAsFactors = F

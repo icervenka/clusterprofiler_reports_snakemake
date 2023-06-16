@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
-### List type enumeration of analyses to be performed that can be exported as csv
-### files to be read by clusterProfiler report script
+# List type enumeration of analyses to be performed that can be exported as csv
+# files to be read by clusterProfiler report script
 
 export_structures <- function(s, path) {
   df <- map_dfr(s, function(x) as.data.frame(x, stringsAsFactors = F))
