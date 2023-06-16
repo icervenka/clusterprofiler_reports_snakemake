@@ -6,3 +6,9 @@ def get_file(wildcards):
 def get_contrast(wildcards):
     c = Metadata[Metadata.contrast == wildcards.contrast].contrast
     return c
+
+def create_directory(name):
+    try:
+        os.mkdir(OUTPUT_DIR)
+    except OSError as e:
+        pass

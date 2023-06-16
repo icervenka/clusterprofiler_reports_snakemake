@@ -42,12 +42,4 @@ rule cp:
     script:
         "../scripts/cp.R"
 
-rule copy_config:
-    input:
-        config="config.yaml",
-        metadata="metadata.tsv"
-    output:
-        config=OUTPUT_DIR + "analysis_params/config.yaml",
-        metadata=OUTPUT_DIR + "analysis_params/metadata.tsv"
-    shell:
-        "cp {input.config} {output.config}; cp {input.metadata} {output.metadata}"
+

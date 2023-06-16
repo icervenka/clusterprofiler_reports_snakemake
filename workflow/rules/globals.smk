@@ -1,0 +1,11 @@
+# folder organization of the pipelline input and output files
+RULES_DIR="workflow/rules/"
+CONFIG_DIR="config/"
+TYPES_DIR="resources/analysis_types/"
+INPUT_DIR="resources/input_files/"
+OUTPUT_DIR="results/"
+LOG_DIR=OUTPUT_DIR+"logs/"
+REPORT_OUTDIR=OUTPUT_DIR+"reports/"
+CSV_OUTDIR=OUTPUT_DIR+"csvs/"
+HEATMAPS_OUTDIR=OUTPUT_DIR+"heatmaps/"
+ANALYSIS_PARAMS_OUTDIR=OUTPUT_DIR+"analysis_params/"

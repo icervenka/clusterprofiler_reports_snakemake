@@ -1,46 +1,40 @@
-import pandas as pd
-import glob
 import os
+import glob
+import pandas as pd
 from snakemake.utils import validate, min_version
 
 ##### set minimum snakemake version #####
-min_version("5.7.0")
+min_version("6.4.1")
 
-##### load config and sample sheets #####
-include: "snakemake/rules/common.smk"
-include: "snakemake/rules/functions.smk"
-configfile: "config.yaml"
-validate(config, schema="snakemake/schema/config.schema.yaml")
+##### load global variables and functions #####
+include: "rules/globals.smk"
+include: "rules/functions.smk"
 
+create_directory(OUTPUT_DIR)
+create_directory(CSV_OUTDIR)
 
-try:
-    os.mkdir(OUTPUT_DIR)
-except OSError as e:
-    print(e)
+##### load config #####
+configfile: CONFIG_DIR+"config.yaml"
+validate(config, schema="schema/config.schema.yaml")
 
-try:
-    os.mkdir(CSV_OUTDIR)
-except OSError as e:
-    print(e)
+##### load metadata #####
+Metadata = pd.read_table(CONFIG_DIR+config["metadata"])
+validate(Metadata, schema="schema/metadata.schema.yaml")
 
-Metadata = pd.read_table(config["metadata"])
-validate(Metadata, schema="snakemake/schema/metadata.schema.yaml")
-
+##### import the rest of the rules #####
 types = config["types"]
 if len(pd.unique(Metadata.contrast)) == 1:
     templates = ['contrast']
 else:
     templates = ['contrast', 'unique']
 
-
-include: "snakemake/rules/cluster_profiler.smk"
-
+include: "rules/cluster_profiler.smk"
 if len(pd.unique(Metadata.contrast)) > 1:
-    include: "snakemake/rules/cluster_profiler_multi.smk"
+    include: "rules/cluster_profiler_multi.smk"
 else:
-    include: "snakemake/rules/skip_cluster_profiler_multi.smk"
-
-include: "snakemake/rules/create_archive.smk"
+    include: "rules/skip_cluster_profiler_multi.smk"
+include: "rules/copy_config.smk"
+include: "rules/create_archive.smk"
 
 # TODO add ridgeplots and upset plot
 # TODO fix the overwriting color warning
@@ -53,5 +47,5 @@ rule all:
         get_cp_output_files,
         get_cp_multi_output_files,
         get_archive_output_files,
-        OUTPUT_DIR + "analysis_params/config.yaml",
-        OUTPUT_DIR + "analysis_params/metadata.tsv"
+        get_copy_config_files
+        
