@@ -1,11 +1,11 @@
 #!/usr/bin/Rscript
 
-source("snakemake/scripts/load_packages.R", local = TRUE)
-source("snakemake/scripts/functions.R", local = TRUE)
-source("snakemake/scripts/wrappers.R", local = TRUE)
+source("workflow/scripts/load_packages.R", local = TRUE)
+source("workflow/scripts/functions.R", local = TRUE)
+source("workflow/scripts/wrappers.R", local = TRUE)
 
 # snakemake parameters ---------------------------------------------------------
-source("snakemake/scripts/load_params.R")
+source("workflow/scripts/load_params.R")
 
 # snakemake inputs -------------------------------------------------------------
 input_file <- snakemake@input[["file"]]

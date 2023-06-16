@@ -808,7 +808,7 @@ create_pathway_csv <- function(subpage_data, template, path) {
 run_cp <- function(data, sp_info, payloads, template, outdir, output_opts = list()) {
   map(payloads$type %>% unique(), function(x, data, sp_info) {
     payloads_sub <- payloads %>% dplyr::filter(type == x)
-    render("snakemake/scripts/cp.Rmd",
+    render(cp_script_path,
       output_file = paste0(x, "_", template, ".html"),
       output_format = "all",
       output_dir = paste0(report_outdir, outdir),

@@ -1,11 +1,22 @@
 def get_archive_output_files(wildcards):
-    return ["pathway_archive.tar.gz"]
+    return [ARCHIVE_OUTDIR + config["experiment_name"] + "_pathway_archive.tar.gz"]
 
 rule create_archive:
     input:
         get_cp_output_files,
         get_cp_multi_output_files,
+        get_copy_config_files,
+        get_heatmap_files
     output:
-        "pathway_archive.tar.gz"
-    shell:
-        "tar cvfz {output} {OUTPUT_DIR}"
+        ARCHIVE_OUTDIR + config["experiment_name"] + "_pathway_archive.tar.gz"
+    run:
+        include_dirs = []
+        for item in RESULT_ARCHIVE_DIRS:
+            if(os.path.exists(item)):
+                include_dirs = include_dirs + [item]
+        shell(
+            "tar "
+            "-czf "    
+            "{output} "
+            "{include_dirs} "
+        )

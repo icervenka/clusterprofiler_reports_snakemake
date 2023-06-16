@@ -8,6 +8,9 @@ properties:
   pandoc_path:
     type: string
 
+  experiment_name:
+    type: string
+
   metadata:
     type: string
   species:
@@ -95,6 +98,7 @@ table:
 
 required:
   - pandoc_path
+  - experiment_name
   - metadata
   - species
   - types

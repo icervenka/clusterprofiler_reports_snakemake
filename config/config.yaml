@@ -1,7 +1,10 @@
 # path to pandoc executable on your system
 pandoc_path: "/usr/lib/rstudio-server/bin/quarto/bin/tools"
 
-metadata: "metadata.tsv"
+experiment_name: "gpr35_ga"
+
+# relative path to root directory of the workflow
+metadata: "config/metadata.tsv"
 species: "mouse"
 create_archive: "yes"
 

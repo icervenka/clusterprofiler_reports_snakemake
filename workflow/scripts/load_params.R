@@ -1,6 +1,6 @@
 # global variables -------------------------------------------------------------
 # scripts_basepath = "snakemaka/scripts"
-data_basepath <- "snakemake/data/"
+data_basepath <- "resources/pathway_databases/"
 cpdb <- read.table(
   paste0(data_basepath, "CPDB_pathways_genes_entrez.tab"),
   sep = "\t",
@@ -14,6 +14,8 @@ uniprot <- read.table(
   header = T,
   stringsAsFactors = F
 )
+
+cp_script_path <- "workflow/scripts/cp.Rmd"
 
 # snakemake common parameters --------------------------------------------------
 rmarkdown::find_pandoc(dir = snakemake@params[["pandoc_path"]])

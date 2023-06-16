@@ -2,9 +2,11 @@
 # List type enumeration of analyses to be performed that can be exported as csv
 # files to be read by clusterProfiler report script
 
+library(magrittr)
+
 export_structures <- function(s, path) {
-  df <- map_dfr(s, function(x) as.data.frame(x, stringsAsFactors = F))
-  map(df$type %>% unique(), function(x) {
+  df <- purrr::map_dfr(s, function(x) as.data.frame(x, stringsAsFactors = F))
+  purrr::map(df$type %>% unique(), function(x) {
     write.csv(
       df %>% dplyr::filter(type == x),
       paste0(path, x, ".csv"),

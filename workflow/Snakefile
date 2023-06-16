@@ -14,11 +14,11 @@ create_directory(OUTPUT_DIR)
 create_directory(CSV_OUTDIR)
 
 ##### load config #####
-configfile: CONFIG_DIR+"config.yaml"
+configfile: "config/config.yaml"
 validate(config, schema="schema/config.schema.yaml")
 
 ##### load metadata #####
-Metadata = pd.read_table(CONFIG_DIR+config["metadata"])
+Metadata = pd.read_table(config["metadata"])
 validate(Metadata, schema="schema/metadata.schema.yaml")
 
 ##### import the rest of the rules #####
@@ -28,11 +28,13 @@ if len(pd.unique(Metadata.contrast)) == 1:
 else:
     templates = ['contrast', 'unique']
 
+include: "rules/export_analysis_types.smk"
 include: "rules/cluster_profiler.smk"
 if len(pd.unique(Metadata.contrast)) > 1:
     include: "rules/cluster_profiler_multi.smk"
 else:
     include: "rules/skip_cluster_profiler_multi.smk"
+include: "rules/create_heatmaps.smk"
 include: "rules/copy_config.smk"
 include: "rules/create_archive.smk"
 
@@ -46,6 +48,8 @@ rule all:
     input:
         get_cp_output_files,
         get_cp_multi_output_files,
+        get_copy_config_files,
+        get_heatmap_files,
         get_archive_output_files,
-        get_copy_config_files
+        
         
