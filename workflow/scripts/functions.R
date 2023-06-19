@@ -266,7 +266,7 @@ get_species_info <- function(species_identifier) {
 }
 
 get_mesh_dbi <- function(species) {
-  ah <- AnnotationHub(localHub = TRUE)
+  ah <- AnnotationHub(localHub = FALSE)
   ah_query <- query(ah, c("MeSHDb", species[["full_name"]]))
   db <- MeSHDbi::MeSHDb(ah_query[[1]])
   return(db)
@@ -483,9 +483,10 @@ default_dt <- function(x, opts = NULL) {
   def_opts <- list(
     dom = "Blrtip",
     # specify content (search box, etc)
-    deferRender = TRUE,
-    scrollY = 600,
+    deferRender = FALSE,
+    scrollY = 200,
     scroller = TRUE,
+    pageLength = 100,
     buttons = list(
       I("colvis"),
       "csv",
