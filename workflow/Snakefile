@@ -38,12 +38,10 @@ include: "rules/create_heatmaps.smk"
 include: "rules/copy_config.smk"
 include: "rules/create_archive.smk"
 
-# TODO add ridgeplots and upset plot
-# TODO fix the overwriting color warning
-# TODO fix the ggplotly warning
 # TODO clustercompare
-# TODO explore new ggplot graphs https://www.cell.com/the-innovation/fulltext/S2666-6758(21)00066-7
 # TODO enrichr libraries https://maayanlab.cloud/Enrichr/#libraries
+# TODO heatplot scale warning
+
 rule all:
     input:
         get_cp_output_files,

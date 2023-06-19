@@ -1,7 +1,0 @@
-type,category,heading,flavour_text
-MSigDB,H,Hallmark,
-MSigDB,C2@CGP,Chemical and Genetic perturbations,
-MSigDB,C2@CP,Canonical pathways,
-MSigDB,C3@TFT:GTRD,Transcription Factor Targets,
-MSigDB,C5,Gene Ontology,
-MSigDB,C7,Immunologic,

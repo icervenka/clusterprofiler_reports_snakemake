@@ -16,7 +16,9 @@ if (class(subpage_df)[1] == "gseaResult") {
     data.frame(pathway_table)$core_enrichment,
     strsplit,
     split = "/"
-  ) %>% unlist() %>% unique())
+  ) %>%
+    unlist() %>%
+    unique())
   order_by <- "NES"
 } else {
   num_genes <- length(
@@ -29,10 +31,6 @@ if (class(subpage_df)[1] == "gseaResult") {
 
 num_categories <- nrow(pathway_table)
 hide_table_cols <- (match(hide_columns, names(pathway_table)) %>% na.omit()) - 1
-
-# TODO sometimes truncated version has same name after
-subpage_df_trunc <- subpage_df %>%
-  clusterProfiler::mutate(Description = stringr::str_trunc(Description, 43))
 ```
 
 Column {data-width=250}
@@ -40,23 +38,42 @@ Column {data-width=250}
 
 ### Dotplot
 ```{r fig.width=7, fig.height=10, out.width="100%", out.height="100%"}
-(
-  dotplot(
-    subpage_df_trunc,
-    orderBy = order_by,
-    showCategory = dotplot_categories
-  ) +
-    scale_colour_gradientn(
-      colours = palette_to_hex(
-        palette = pathway_palette,
-        no_colors = no_colors,
-        rev = T
-      )
-    ) +
+
+if (class(subpage_df)[1] == "enrichResult") {
+  (subpage_df@result %>%
+    mutate(GeneRatio = DOSE::parse_ratio(GeneRatio)) %>%
+    arrange(GeneRatio) %>%
+    slice_tail(n = dotplot_categories) %>%
+    preserve_order_as_factor(Description) %>%
+    clusterProfiler::mutate(Description = str_trunc(Description, 43)) %>%
+    ggplot(aes(x = GeneRatio, y = Description)) +
+    geom_segment(aes(xend = 0, yend = Description), color = "gray50") +
+    geom_point(aes(color = p.adjust, size = Count)) +
+    scale_size_continuous(range = c(2, 10)) +
     theme_bw(base_size = 12) +
-    theme(legend.position = "none")
-) %>%
-  ggplotly()
+    theme(legend.position = "none") +
+    scale_color_viridis() +
+    xlab("Gene Ratio") +
+    ylab("")
+  ) %>%
+   ggplotly()
+} else if (class(subpage_df)[1] == "gseaResult") {
+  (subpage_df@result %>%
+    arrange(abs(NES)) %>%
+    slice_tail(n = dotplot_categories) %>%
+    arrange(NES) %>%
+    preserve_order_as_factor(Description) %>%
+    clusterProfiler::mutate(Description = str_trunc(Description, 43)) %>%
+    ggplot(aes(NES, Description, fill = qvalues)) +
+    geom_bar(stat = "identity") +
+    theme_bw(base_size = 12) +
+    theme(legend.position = "none") +
+    scale_fill_viridis() +
+    xlab("Normalized Enrichment Score") +
+    ylab(NULL)
+  ) %>%
+    ggplotly()
+}
 ```
 
 ### Identified pathways

@@ -169,6 +169,15 @@ get_genes <- function(cp) {
   return(genes)
 }
 
+preserve_order_as_factor <- function(data, cols) {
+  gc <- enquos(cols)
+  data <- data %>%
+    mutate(across(!!!gc, function(x) {
+      factor(x, levels = unique(x))
+    }))
+  return(data)
+}
+
 # analysis options -------------------------------------------------------------
 get_template <- function(x) {
   templates <- list(
@@ -804,7 +813,7 @@ create_pathway_csv <- function(subpage_data, template, path) {
 
 # TODO uses fc to order, might be useful to use custom ordering
 # TODO add knitr options
-
+# TODO pass correctly cp_script_path to function
 run_cp <- function(data, sp_info, payloads, template, outdir, output_opts = list()) {
   map(payloads$type %>% unique(), function(x, data, sp_info) {
     payloads_sub <- payloads %>% dplyr::filter(type == x)
