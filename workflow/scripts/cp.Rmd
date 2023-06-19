@@ -13,6 +13,8 @@ output:
 options(knitr.duplicate.label = "allow")
 knitr::opts_knit$set(root.dir = normalizePath(".."))
 
+scrolly_dt <- 600
+
 all_cp <- map(
   split(payloads_sub, 1:nrow(payloads_sub)) %>% unname() %>% map(~ c(.x)),
   ~ do.call(
@@ -31,6 +33,18 @@ if (template == "contrast") {
   input_contrast <- outdir
   set_overview <- TRUE
 }
+```
+
+```{r css, echo=FALSE, results='asis'}
+library(glue)
+cat(glue(.open = "<<", .close = ">>", "
+<style>
+.dataTables_scrollBody {
+    height: <<scrolly_dt>>px !important;
+    max-height: <<scrolly_dt>>px !important;
+}
+</style>
+"))
 ```
 
 # Overview

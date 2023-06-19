@@ -23,6 +23,6 @@ if (template == "contrast") {
 
 table_expr_data %>%
   format_gene_expr_dt(sp_info) %>%
-  default_dt() %>%
+  default_dt(opts = list(scrollY = scrolly_dt)) %>%
   formatRound(columns = c(4:6), digits = 5, mark = "")
 ```

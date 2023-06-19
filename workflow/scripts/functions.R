@@ -484,9 +484,8 @@ default_dt <- function(x, opts = NULL) {
     dom = "Blrtip",
     # specify content (search box, etc)
     deferRender = FALSE,
-    scrollY = 200,
     scroller = TRUE,
-    pageLength = 100,
+    autoWidth = FALSE,
     buttons = list(
       I("colvis"),
       "csv",

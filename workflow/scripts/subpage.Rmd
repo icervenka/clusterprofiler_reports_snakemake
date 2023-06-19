@@ -44,8 +44,8 @@ if (class(subpage_df)[1] == "enrichResult") {
     mutate(GeneRatio = DOSE::parse_ratio(GeneRatio)) %>%
     arrange(GeneRatio) %>%
     slice_tail(n = dotplot_categories) %>%
-    preserve_order_as_factor(Description) %>%
     clusterProfiler::mutate(Description = str_trunc(Description, 43)) %>%
+    preserve_order_as_factor(Description) %>%
     ggplot(aes(x = GeneRatio, y = Description)) +
     geom_segment(aes(xend = 0, yend = Description), color = "gray50") +
     geom_point(aes(color = p.adjust, size = Count)) +
@@ -62,8 +62,8 @@ if (class(subpage_df)[1] == "enrichResult") {
     arrange(abs(NES)) %>%
     slice_tail(n = dotplot_categories) %>%
     arrange(NES) %>%
-    preserve_order_as_factor(Description) %>%
     clusterProfiler::mutate(Description = str_trunc(Description, 43)) %>%
+    preserve_order_as_factor(Description) %>%
     ggplot(aes(NES, Description, fill = qvalues)) +
     geom_bar(stat = "identity") +
     theme_bw(base_size = 12) +
@@ -134,7 +134,7 @@ forceNetwork(
 if (class(subpage_df)[1] == "gseaResult") {
   show_plots <- min(15, nrow(pathway_table))
   grobs <- map(1:show_plots, function(x) {
-    gseaplot2(subpage_df, geneSetID = x, subplots = 1:2)
+    gseaplot2(subpage_df, geneSetID = x, subplots = 1:2, base_size = 6)
   })
   null_plots <- vector(mode = "list", length = (15 - show_plots))
   grobs <- c(grobs, null_plots)
@@ -148,7 +148,7 @@ if (class(subpage_df)[1] == "gseaResult") {
       ),
       subpage_df$Description[1:show_plots]
     ),
-    label_size = 8,
+    label_size = 7,
     hjust = 0
   )
 } else {
@@ -216,8 +216,10 @@ Column {data-width=300}
 ```{r fig.width=10, fig.height=9, out.height="100%"}
 pathway_table %>%
   dplyr::select(-ID) %>%
-  default_dt(list(columnDefs = list(
-    list(targets = hide_table_cols, visible = FALSE)
+  default_dt(
+    list(columnDefs = list(
+    list(targets = hide_table_cols, visible = FALSE),
+    scrollY = scrolly_dt
   ))) %>%
   formatRound(columns = c(2:6), digits = 4)
 ```
