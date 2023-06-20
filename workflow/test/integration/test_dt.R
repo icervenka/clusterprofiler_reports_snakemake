@@ -19,9 +19,9 @@ template = "contrast"
 source("setup_test_env.R", local = TRUE)
 
 # call individual analyses
-w1 = get_wrapper("Pathways", "ORA")
+w1 = get_wrapper("MSigDB", "ORA")
 r1 = map(c("all", "up", "down"), function(x) {
-  df = w1(filter_gene_list(geneList, x), "Wiki", sp_info)
+  df = w1(filter_gene_list(geneList, x), "C2@CP", sp_info)
 })
 
 # # run a single iteration of run_cp

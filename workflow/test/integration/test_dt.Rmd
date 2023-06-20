@@ -1,30 +1,129 @@
 ---
 title: "test_dt"
-author: "icervenka"
-date: "2023-06-19"
-output: html_document
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: paper
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+subpage_df = r1[[1]]
+pathway_table <- cp_to_df(subpage_df)
+
+if (class(subpage_df)[1] == "gseaResult") {
+  num_genes <- length(lapply(
+    data.frame(pathway_table)$core_enrichment,
+    strsplit,
+    split = "/"
+  ) %>%
+    unlist() %>%
+    unique())
+  order_by <- "NES"
+} else {
+  num_genes <- length(
+    lapply(data.frame(pathway_table)$geneID, strsplit, split = "/") %>%
+      unlist() %>%
+      unique()
+  )
+  order_by <- "GeneRatio"
+}
+
+
+num_categories <- nrow(pathway_table)
+hide_table_cols <- (match(table$hide_columns, names(pathway_table)) %>% na.omit()) - 1
+
+default_dt <- function(x, opts = NULL) {
+  def_opts <- list(
+    dom = "Blrtip",
+    # specify content (search box, etc)
+    deferRender = FALSE,
+    scroller = TRUE,
+    scrollY = 400,
+    autoWidth = FALSE,
+    buttons = list(
+      I("colvis"),
+      "csv",
+      "excel"
+    )
+  )
+
+  DT::datatable(
+    x,
+    rownames = T,
+    escape = F,
+    filter = "top",
+    extensions = c("Buttons", "Scroller", "FixedHeader"),
+    style = "bootstrap",
+    class = "compact stripe",
+    width = "100%",
+    options = c(def_opts, opts)
+  )
+}
+
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r css, echo=FALSE, results='asis'}
+# scrolly_dt <- 400
+# 
+# library(glue)
+# cat(glue(.open = "<<", .close = ">>", "
+# <style>
+# .dataTables_scrollBody {
+#     height: <<scrolly_dt>>px !important;
+#     max-height: <<scrolly_dt>>px !important;
+# }
+# </style>
+# "))
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{css}
+.dataTables_scrollBody {
+    height: 1000px !important;
+    max-height: 1000px !important;
+}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Overview
+
+`r shiny::tags$h1("Overview", style="text-align:left")`
+
+Column {.tabset .tabset-fade data-width=600}
+-----------------------------------------------------------------------
+
+```{r child = '../../scripts/description.Rmd', eval = T, , echo=FALSE}
+```
+
+Column {data-width=300}
+-----------------------------------------------------------------------
+
+```{r, echo=FALSE}
+pathway_table %>%
+  dplyr::select(-ID) %>%
+  default_dt(list(columnDefs = list(
+    list(targets = hide_table_cols, visible = FALSE)
+  ))) %>%
+  formatRound(columns = c(2:6), digits = 4)
+```
+
+
+```{r, echo=FALSE}
+table_expr_data <- data
+
+# if ((payloads_sub$type[1] %in% c("Disease", "ConsensusPathDB")) && (sp_info["common"] != "human")) {
+#   table_expr_data <- table_expr_data %>%
+#     add_human_ids(sp_info)
+#   select_symbol <- "SYMBOL_HUMAN"
+# } else {
+#   select_symbol <- "SYMBOL"
+# }
+# 
+table_expr_data %>%
+  format_gene_expr_dt(sp_info) %>%
+  default_dt() %>%
+  formatRound(columns = c(4:6), digits = 5, mark = "")
+```
