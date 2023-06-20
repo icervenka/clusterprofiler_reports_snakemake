@@ -1,0 +1,38 @@
+```{r fig.width=7, fig.height=10, out.width="100%", out.height="100%"}
+
+if (class(subpage_df)[1] == "enrichResult") {
+  (subpage_df@result %>%
+    mutate(GeneRatio = DOSE::parse_ratio(GeneRatio)) %>%
+    arrange(GeneRatio) %>%
+    slice_tail(n = dotplot_categories) %>%
+    preserve_order_as_factor(Description) %>%
+    ggplot(aes(x = GeneRatio, y = Description)) +
+    geom_segment(aes(xend = 0, yend = Description), color = "gray50") +
+    geom_point(aes(color = p.adjust, size = Count)) +
+    scale_size_continuous(range = c(2, 10)) +
+    theme_bw(base_size = 12) +
+    theme(legend.position = "none") +
+    scale_color_viridis(direction = -1) +
+    scale_y_discrete(label = function(x) str_trunc(x, 43)) +
+    xlab("Gene Ratio") +
+    ylab("")
+  ) %>%
+   ggplotly()
+} else if (class(subpage_df)[1] == "gseaResult") {
+  (subpage_df@result %>%
+    arrange(abs(NES)) %>%
+    slice_tail(n = dotplot_categories) %>%
+    arrange(NES) %>%
+    preserve_order_as_factor(Description) %>%
+    ggplot(aes(NES, Description, fill = qvalues)) +
+    geom_bar(stat = "identity") +
+    theme_bw(base_size = 12) +
+    theme(legend.position = "none") +
+    scale_fill_viridis(direction = -1) +
+    scale_y_discrete(label = function(x) str_trunc(x, 43)) +
+    xlab("Normalized Enrichment Score") +
+    ylab(NULL)
+  ) %>%
+    ggplotly()
+}
+```

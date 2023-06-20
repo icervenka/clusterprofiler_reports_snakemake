@@ -1,0 +1,33 @@
+```{r fig.width=10, fig.height=8}
+emap_data <- create_emapplot_data(
+  subpage_df,
+  pathway_categories = emapplot_categories
+)
+
+forceNetwork(
+  Links = emap_data$edges,
+  Nodes = emap_data$nodes,
+  colourScale = JS(
+    generate_js_color_string(
+      emap_data$nodes$group,
+      add_front = NULL,
+      palette = viridis,
+      rev = T
+    )
+  ),
+  Source = "from_num",
+  Target = "to_num",
+  NodeID = "Description",
+  Nodesize = "value",
+  Group = "group",
+  Value = "width",
+  fontFamily = "Helvetica",
+  fontSize = 14,
+  opacity = 1,
+  linkDistance = 150,
+  linkColour = "#C0C0C0",
+  charge = -125,
+  opacityNoHover = 1,
+  zoom = T
+)
+```

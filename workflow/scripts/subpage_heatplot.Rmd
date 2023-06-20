@@ -1,0 +1,43 @@
+```{r fig.width=10, fig.height=9}
+if (class(subpage_df)[1] == "gseaResult") {
+  show_plots <- min(15, nrow(pathway_table))
+  grobs <- map(1:show_plots, function(x) {
+    gseaplot2(subpage_df, geneSetID = x, subplots = 1:2, base_size = 6)
+  })
+  null_plots <- vector(mode = "list", length = (15 - show_plots))
+  grobs <- c(grobs, null_plots)
+  cowplot::plot_grid(
+    plotlist = grobs,
+    ncol = 3,
+    labels = paste0(
+      paste(
+        rep(" ", 12),
+        collapse = ""
+      ),
+      subpage_df$Description[1:show_plots]
+    ),
+    label_size = 7,
+    hjust = 0
+  )
+} else {
+  (
+    heatplot(
+      subpage_df,
+      foldChange = geneList,
+      showCategory = heatplot_categories
+    ) +
+      scale_fill_gradient2(
+        low = pal_lmh[1],
+        mid = pal_lmh[2],
+        high = pal_lmh[3]
+      ) +
+      theme_minimal(base_size = 12) +
+      theme(
+        panel.grid.major = element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position = "none"
+      )
+  ) %>%
+    ggplotly()
+}
+```

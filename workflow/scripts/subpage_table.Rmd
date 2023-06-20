@@ -1,0 +1,10 @@
+```{r fig.width=10, fig.height=9, out.height="100%"}
+pathway_table %>%
+  dplyr::select(-ID) %>%
+  default_dt(
+    list(columnDefs = list(
+    list(targets = hide_table_cols, visible = FALSE)
+  ),
+    scrollY = scrolly_dt)) %>%
+  formatRound(columns = c(2:6), digits = 4)
+```

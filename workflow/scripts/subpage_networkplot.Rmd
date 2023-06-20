@@ -1,0 +1,38 @@
+```{r fig.width=10, fig.height=9, out.width="100%", out.height="100%"}
+network_data <- create_networkplot_data(
+  subpage_df,
+  geneList,
+  pathway_categories = networkplot_categories
+)
+
+gene_node_type <- network_data$nodes %>%
+  dplyr::filter(group != "process") %>%
+  dplyr::select(group) %>%
+  pull() %>%
+  as.numeric()
+
+forceNetwork(
+  Links = network_data$edges,
+  Nodes = network_data$nodes,
+  colourScale = JS(
+    generate_js_color_string(
+      gene_node_type,
+      palette = gene_palette,
+      no_colors = no_colors,
+      rev = T
+    )
+  ),
+  Source = "from_num",
+  Target = "to_num",
+  NodeID = "name",
+  Group = "group",
+  fontFamily = "Helvetica",
+  fontSize = 12,
+  opacity = 1,
+  linkDistance = 125,
+  linkColour = "#808080",
+  charge = -125,
+  opacityNoHover = 1,
+  zoom = T
+)
+```

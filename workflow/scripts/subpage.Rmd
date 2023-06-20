@@ -38,43 +38,7 @@ Column {data-width=250}
 -----------------------------------------------------------------------
 
 ### Dotplot
-```{r fig.width=7, fig.height=10, out.width="100%", out.height="100%"}
-
-if (class(subpage_df)[1] == "enrichResult") {
-  (subpage_df@result %>%
-    mutate(GeneRatio = DOSE::parse_ratio(GeneRatio)) %>%
-    arrange(GeneRatio) %>%
-    slice_tail(n = dotplot_categories) %>%
-    preserve_order_as_factor(Description) %>%
-    ggplot(aes(x = GeneRatio, y = Description)) +
-    geom_segment(aes(xend = 0, yend = Description), color = "gray50") +
-    geom_point(aes(color = p.adjust, size = Count)) +
-    scale_size_continuous(range = c(2, 10)) +
-    theme_bw(base_size = 12) +
-    theme(legend.position = "none") +
-    scale_color_viridis(direction = -1) +
-    scale_y_discrete(label = function(x) str_trunc(x, 43)) +
-    xlab("Gene Ratio") +
-    ylab("")
-  ) %>%
-   ggplotly()
-} else if (class(subpage_df)[1] == "gseaResult") {
-  (subpage_df@result %>%
-    arrange(abs(NES)) %>%
-    slice_tail(n = dotplot_categories) %>%
-    arrange(NES) %>%
-    preserve_order_as_factor(Description) %>%
-    ggplot(aes(NES, Description, fill = qvalues)) +
-    geom_bar(stat = "identity") +
-    theme_bw(base_size = 12) +
-    theme(legend.position = "none") +
-    scale_fill_viridis(direction = -1) +
-    scale_y_discrete(label = function(x) str_trunc(x, 43)) +
-    xlab("Normalized Enrichment Score") +
-    ylab(NULL)
-  ) %>%
-    ggplotly()
-}
+```{r child = 'scripts/subpage_dotplot.Rmd', eval = T}
 ```
 
 ### Identified pathways
@@ -87,163 +51,27 @@ valueBox(num_categories)
 valueBox(num_genes)
 ```
 
-
 Column {.tabset .tabset-fade data-width=450}
 -----------------------------------------------------------------------
 ### Network plot
-```{r fig.width=10, fig.height=9, out.width="100%", out.height="100%"}
-network_data <- create_networkplot_data(
-  subpage_df,
-  geneList,
-  pathway_categories = networkplot_categories
-)
-
-gene_node_type <- network_data$nodes %>%
-  dplyr::filter(group != "process") %>%
-  dplyr::select(group) %>%
-  pull() %>%
-  as.numeric()
-
-forceNetwork(
-  Links = network_data$edges,
-  Nodes = network_data$nodes,
-  colourScale = JS(
-    generate_js_color_string(
-      gene_node_type,
-      palette = gene_palette,
-      no_colors = no_colors,
-      rev = T
-    )
-  ),
-  Source = "from_num",
-  Target = "to_num",
-  NodeID = "name",
-  Group = "group",
-  fontFamily = "Helvetica",
-  fontSize = 12,
-  opacity = 1,
-  linkDistance = 125,
-  linkColour = "#808080",
-  charge = -125,
-  opacityNoHover = 1,
-  zoom = T
-)
+```{r child = 'scripts/subpage_networkplot.Rmd', eval = T}
 ```
 
 ### Heatplot/Leading edge analysis
-```{r fig.width=10, fig.height=9}
-if (class(subpage_df)[1] == "gseaResult") {
-  show_plots <- min(15, nrow(pathway_table))
-  grobs <- map(1:show_plots, function(x) {
-    gseaplot2(subpage_df, geneSetID = x, subplots = 1:2, base_size = 6)
-  })
-  null_plots <- vector(mode = "list", length = (15 - show_plots))
-  grobs <- c(grobs, null_plots)
-  cowplot::plot_grid(
-    plotlist = grobs,
-    ncol = 3,
-    labels = paste0(
-      paste(
-        rep(" ", 12),
-        collapse = ""
-      ),
-      subpage_df$Description[1:show_plots]
-    ),
-    label_size = 7,
-    hjust = 0
-  )
-} else {
-  (
-    heatplot(
-      subpage_df,
-      foldChange = geneList,
-      showCategory = heatplot_categories
-    ) +
-      scale_fill_gradient2(
-        low = pal_lmh[1],
-        mid = pal_lmh[2],
-        high = pal_lmh[3]
-      ) +
-      theme_minimal(base_size = 12) +
-      theme(
-        panel.grid.major = element_blank(),
-        axis.text.x = element_text(angle = 90, hjust = 1),
-        legend.position = "none"
-      )
-  ) %>%
-    ggplotly()
-}
+```{r child = 'scripts/subpage_heatplot.Rmd', eval = T}
 ```
 
 ### Enrichment map
-```{r fig.width=10, fig.height=8}
-emap_data <- create_emapplot_data(
-  subpage_df,
-  pathway_categories = emapplot_categories
-)
-
-forceNetwork(
-  Links = emap_data$edges,
-  Nodes = emap_data$nodes,
-  colourScale = JS(
-    generate_js_color_string(
-      emap_data$nodes$group,
-      add_front = NULL,
-      palette = viridis,
-      rev = T
-    )
-  ),
-  Source = "from_num",
-  Target = "to_num",
-  NodeID = "Description",
-  Nodesize = "value",
-  Group = "group",
-  Value = "width",
-  fontFamily = "Helvetica",
-  fontSize = 14,
-  opacity = 1,
-  linkDistance = 150,
-  linkColour = "#C0C0C0",
-  charge = -125,
-  opacityNoHover = 1,
-  zoom = T
-)
+```{r child = 'scripts/subpage_emapplot.Rmd', eval = T}
 ```
 
 Column {data-width=300}
 -----------------------------------------------------------------------
 
 ### Data table
-```{r fig.width=10, fig.height=9, out.height="100%"}
-pathway_table %>%
-  dplyr::select(-ID) %>%
-  default_dt(
-    list(columnDefs = list(
-    list(targets = hide_table_cols, visible = FALSE)
-  ),
-    scrollY = scrolly_dt)) %>%
-  formatRound(columns = c(2:6), digits = 4)
+```{r child = 'scripts/subpage_table.Rmd', eval = T}
 ```
  
 ### Plot legends
-```{r fig.width=10, fig.height=1, out.height="100%"}
-cowplot::plot_grid(
-  create_legend(
-    network_data$nodes %>% dplyr::filter(group != "process") %>% pull(value),
-    gene_palette,
-    no_colors,
-    rev = T
-  ),
-  create_legend(
-    emap_data$nodes %>% pull(p.adjust),
-    pathway_palette,
-    no_colors,
-    symmetric = F,
-    rev = T
-  ),
-  labels = c("   Gene expression (log2 fold-change)", "   Pathway p-value"),
-  label_size = 12,
-  hjust = 0,
-  vjust = 1
-)
+```{r child = 'scripts/subpage_plotlegends.Rmd', eval = T}
 ```
