@@ -1,6 +1,9 @@
 ._*
+.lintr
 .snakemake/
 .vscode/
 resources/input_files/
 resources/analysis_types/
 results/
+workflow/test/*/reports/
+workflow/test/*/csvs/

@@ -1,9 +1,3 @@
-### Performed analyses
-
-```{r}
-valueBox(paste(get_template(template)$analyses, collapse = ", "))
-```
-
 ### ORA - Analysed Genes
 
 ```{r}

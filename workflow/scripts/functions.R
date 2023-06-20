@@ -216,6 +216,16 @@ filter_gene_list <- function(geneList, how) {
   return(filtered[[how]])
 }
 
+filter_data <- function(data,
+                        padj_column = "padj",
+                        padj_threshold = 0.05,
+                        fc_column = "log2FoldChange",
+                        fc_threshold = 0.585) {
+  data %>%
+    dplyr::filter(!!as.symbol(padj_column) < padj_threshold) %>%
+    dplyr::filter(abs(!!as.symbol(fc_column)) > fc_threshold)
+}
+
 # Species ID accessor ----------------------------------------------------------
 get_species_info <- function(species_identifier) {
   species_info <- list(
@@ -266,7 +276,7 @@ get_species_info <- function(species_identifier) {
 }
 
 get_mesh_dbi <- function(species) {
-  ah <- AnnotationHub(localHub = FALSE)
+  ah <- AnnotationHub(localHub = TRUE)
   ah_query <- query(ah, c("MeSHDb", species[["full_name"]]))
   db <- MeSHDbi::MeSHDb(ah_query[[1]])
   return(db)
@@ -573,16 +583,6 @@ set_contrast_to_comb_string <- function(sc, m, sep = "__int__") {
   return(cs)
 }
 
-filter_data <- function(data,
-                        padj_column = "padj",
-                        padj_threshold = 0.05,
-                        fc_column = "log2FoldChange",
-                        fc_threshold = 0.585) {
-  data %>%
-    dplyr::filter(!!as.symbol(padj_column) < padj_threshold) %>%
-    dplyr::filter(abs(!!as.symbol(fc_column)) > fc_threshold)
-}
-
 create_set_intersection_name <- function(setid,
                                          m,
                                          remove_prefix = "SET.",
@@ -694,11 +694,7 @@ create_subpage_data <- function(expr_data, sp_info, params) {
     sort(decreasing = T)
   geneList <- filter_gene_list(geneList, params$gene_set)
 
-  # if (length(filter_gene_list(geneList, params$gene_set)) < 1) {
-  #   return(NULL)
-  # }
-
-  if (length(geneList) < 1) {
+   if (length(geneList) < 1) {
     return(NULL)
   }
 
@@ -718,6 +714,7 @@ create_subpage_data <- function(expr_data, sp_info, params) {
   if (nrow(data.frame(df)) == 0 | is.null(df)) {
     return(NULL)
   }
+  
   if (df@readable == FALSE) {
     df <- setReadable(df, sp_info["orgdb"], keyType = "ENTREZID")
   }
@@ -814,7 +811,8 @@ create_pathway_csv <- function(subpage_data, template, path) {
 # TODO uses fc to order, might be useful to use custom ordering
 # TODO add knitr options
 # TODO pass correctly cp_script_path to function
-run_cp <- function(data, sp_info, payloads, template, outdir, output_opts = list()) {
+run_cp <- function(data, sp_info, payloads, template, outdir, 
+                   cp_script_path, output_opts = list()) {
   map(payloads$type %>% unique(), function(x, data, sp_info) {
     payloads_sub <- payloads %>% dplyr::filter(type == x)
     render(cp_script_path,

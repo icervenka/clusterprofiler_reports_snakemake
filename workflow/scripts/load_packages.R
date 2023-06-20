@@ -25,6 +25,7 @@ pkgs <- c(
     "MeSHDbi",
     "org.Hs.eg.db",
     "org.Mm.eg.db",
+    "glue",
     "ggplot2",
     "tibble",
     "tidyr",

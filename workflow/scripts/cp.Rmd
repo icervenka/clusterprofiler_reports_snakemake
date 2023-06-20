@@ -12,8 +12,7 @@ output:
 # Set knitr options to allow duplicate labels (needed for the subpages)
 options(knitr.duplicate.label = "allow")
 knitr::opts_knit$set(root.dir = normalizePath(".."))
-
-scrolly_dt <- 600
+scrolly_dt <- 700
 
 all_cp <- map(
   split(payloads_sub, 1:nrow(payloads_sub)) %>% unname() %>% map(~ c(.x)),
@@ -36,7 +35,7 @@ if (template == "contrast") {
 ```
 
 ```{r css, echo=FALSE, results='asis'}
-library(glue)
+# fix for datatable height in flexdashboard
 cat(glue(.open = "<<", .close = ">>", "
 <style>
 .dataTables_scrollBody {
@@ -46,10 +45,6 @@ cat(glue(.open = "<<", .close = ">>", "
 </style>
 "))
 ```
-
-# Overview
-
-`r shiny::tags$h1("Overview", style="text-align:left")`
 
 Column {.tabset .tabset-fade data-width=225}
 -----------------------------------------------------------------------

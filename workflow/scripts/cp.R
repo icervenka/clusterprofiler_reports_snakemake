@@ -48,6 +48,7 @@ run_cp(
   payloads,
   template,
   input_contrast,
+  cp_script_path,
   output_opts = knitr_output_options
 )
 
@@ -72,6 +73,7 @@ if (length(meta$contrast %>% unique()) > 1) {
     payloads,
     template,
     input_contrast,
+    cp_script_path,
     output_opts = knitr_output_options
   )
 }

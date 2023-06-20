@@ -31,6 +31,7 @@ if (class(subpage_df)[1] == "gseaResult") {
 
 num_categories <- nrow(pathway_table)
 hide_table_cols <- (match(hide_columns, names(pathway_table)) %>% na.omit()) - 1
+scrolly_dt <- 700
 ```
 
 Column {data-width=250}
@@ -44,7 +45,6 @@ if (class(subpage_df)[1] == "enrichResult") {
     mutate(GeneRatio = DOSE::parse_ratio(GeneRatio)) %>%
     arrange(GeneRatio) %>%
     slice_tail(n = dotplot_categories) %>%
-    clusterProfiler::mutate(Description = str_trunc(Description, 43)) %>%
     preserve_order_as_factor(Description) %>%
     ggplot(aes(x = GeneRatio, y = Description)) +
     geom_segment(aes(xend = 0, yend = Description), color = "gray50") +
@@ -52,7 +52,8 @@ if (class(subpage_df)[1] == "enrichResult") {
     scale_size_continuous(range = c(2, 10)) +
     theme_bw(base_size = 12) +
     theme(legend.position = "none") +
-    scale_color_viridis() +
+    scale_color_viridis(direction = -1) +
+    scale_y_discrete(label = function(x) str_trunc(x, 43)) +
     xlab("Gene Ratio") +
     ylab("")
   ) %>%
@@ -62,13 +63,13 @@ if (class(subpage_df)[1] == "enrichResult") {
     arrange(abs(NES)) %>%
     slice_tail(n = dotplot_categories) %>%
     arrange(NES) %>%
-    clusterProfiler::mutate(Description = str_trunc(Description, 43)) %>%
     preserve_order_as_factor(Description) %>%
     ggplot(aes(NES, Description, fill = qvalues)) +
     geom_bar(stat = "identity") +
     theme_bw(base_size = 12) +
     theme(legend.position = "none") +
-    scale_fill_viridis() +
+    scale_fill_viridis(direction = -1) +
+    scale_y_discrete(label = function(x) str_trunc(x, 43)) +
     xlab("Normalized Enrichment Score") +
     ylab(NULL)
   ) %>%
@@ -218,9 +219,9 @@ pathway_table %>%
   dplyr::select(-ID) %>%
   default_dt(
     list(columnDefs = list(
-    list(targets = hide_table_cols, visible = FALSE),
-    scrollY = scrolly_dt
-  ))) %>%
+    list(targets = hide_table_cols, visible = FALSE)
+  ),
+    scrollY = scrolly_dt)) %>%
   formatRound(columns = c(2:6), digits = 4)
 ```
  

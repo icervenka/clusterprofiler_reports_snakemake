@@ -41,7 +41,6 @@ include: "rules/create_archive.smk"
 # TODO clustercompare
 # TODO enrichr libraries https://maayanlab.cloud/Enrichr/#libraries
 # TODO heatplot scale warning
-
 rule all:
     input:
         get_cp_output_files,
