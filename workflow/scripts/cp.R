@@ -1,55 +1,47 @@
 #!/usr/bin/Rscript
 
-source("workflow/scripts/load_packages.R", local = TRUE)
-source("workflow/scripts/functions.R", local = TRUE)
-source("workflow/scripts/wrappers.R", local = TRUE)
+source("workflow/scripts/load_packages.R")
+source("workflow/scripts/functions.R")
+source("workflow/scripts/wrappers.R")
 
 # snakemake parameters ---------------------------------------------------------
-source("workflow/scripts/load_params.R")
+source("workflow/scripts/load_config.R")
+source("workflow/scripts/load_extradb.R")
 
 # snakemake inputs -------------------------------------------------------------
 input_file <- snakemake@input[["file"]]
 input_type <- snakemake@input[["type"]]
 
+input_contrast <- snakemake@params[["contrast"]]
+rds_outdir <- snakemake@params[["rds_outdir"]]
+
 # load data and metadata -------------------------------------------------------
-meta <- read.table(metadata, header = T, stringsAsFactors = F)
+diffexp_data <- readRDS(input_file)[[1]]
+meta <- read.table(metadata, header = TRUE, stringsAsFactors = FALSE)
 
-data <- input_file %>%
-  load_data(get_species_info(species),
-    id_column_name = id_column_name,
-    id_type = id_type
-  )
-
-all_data <- paste0(snakemake@params[["input_dir"]], meta$file) %>%
-  map(~ load_data(
-    .x,
-    get_species_info(species),
-    id_column_name = id_column_name,
-    id_type = id_type
-  )) %>%
-  setNames(meta$contrast)
-
-knitr_output_options <- list(
-  mathjax = NULL,
-  self_contained = self_contained,
-  lib_dir = paste0("../../", report_outdir, input_contrast, "/_libs")
-)
+# knitr_output_options <- list(
+#   mathjax = NULL,
+#   self_contained = self_contained,
+#   lib_dir = paste0("../../", report_outdir, input_contrast, "/_libs")
+# )
 
 # run analysis -----------------------------------------------------------------
 template <- "contrast"
 payloads <- merge(
-  read.csv(input_type, stringsAsFactors = F),
+  read.csv(input_type, stringsAsFactors = FALSE),
   template_to_df(get_template(template))
 )
 
-run_cp(
-  data,
+cp_data_contrast <- run_cp(
+  diffexp_data,
   get_species_info(species),
-  payloads,
-  template,
-  input_contrast,
-  cp_script_path,
-  output_opts = knitr_output_options
+  payloads
+)
+
+export_cp(
+  cp_data_contrast,
+  paste0(rds_outdir, input_contrast, "/"),
+  template
 )
 
 # run analysis upset unique set ------------------------------------------------
@@ -57,7 +49,7 @@ run_cp(
 if (length(meta$contrast %>% unique()) > 1) {
   template <- "unique"
   payloads <- merge(
-    read.csv(input_type, stringsAsFactors = F),
+    read.csv(input_type, stringsAsFactors = FALSE),
     template_to_df(get_template(template))
   )
 
@@ -67,13 +59,15 @@ if (length(meta$contrast %>% unique()) > 1) {
     min_set_size = min_set_size
   )
 
-  run_cp(
+  cp_data_unique <- run_cp(
     unique_data,
     get_species_info(species),
-    payloads,
-    template,
-    input_contrast,
-    cp_script_path,
-    output_opts = knitr_output_options
+    payloads
+  )
+
+  export_cp(
+    cp_data_contrast,
+    paste0(rds_outdir, input_contrast, "/"),
+    template
   )
 }

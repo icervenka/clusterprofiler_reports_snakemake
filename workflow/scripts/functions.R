@@ -694,7 +694,7 @@ create_subpage_data <- function(expr_data, sp_info, params) {
     sort(decreasing = T)
   geneList <- filter_gene_list(geneList, params$gene_set)
 
-   if (length(geneList) < 1) {
+  if (length(geneList) < 1) {
     return(NULL)
   }
 
@@ -714,7 +714,7 @@ create_subpage_data <- function(expr_data, sp_info, params) {
   if (nrow(data.frame(df)) == 0 | is.null(df)) {
     return(NULL)
   }
-  
+
   if (df@readable == FALSE) {
     df <- setReadable(df, sp_info["orgdb"], keyType = "ENTREZID")
   }
@@ -811,15 +811,29 @@ create_pathway_csv <- function(subpage_data, template, path) {
 # TODO uses fc to order, might be useful to use custom ordering
 # TODO add knitr options
 # TODO pass correctly cp_script_path to function
-run_cp <- function(data, sp_info, payloads, template, outdir, 
-                   cp_script_path, output_opts = list()) {
+run_cp <- function(data, sp_info, payloads) {
   map(payloads$type %>% unique(), function(x, data, sp_info) {
     payloads_sub <- payloads %>% dplyr::filter(type == x)
-    render(cp_script_path,
-      output_file = paste0(x, "_", template, ".html"),
-      output_format = "all",
-      output_dir = paste0(report_outdir, outdir),
-      output_options = output_opts
+
+    all_cp <- map(
+      split(payloads_sub, seq_len(nrow(payloads_sub))) %>%
+        unname() %>%
+        map(~ c(.x)),
+      ~ do.call(
+        create_subpage_data,
+        list(
+          expr_data = data,
+          sp_info = sp_info,
+          params = .x
+        )
+      )
     )
-  }, data = data, sp_info = sp_info)
+  }, data = data, sp_info = sp_info) %>%
+  setNames(payloads$type %>% unique())
+}
+
+export_cp <- function(cp_list, path, template) {
+  walk(names(cp_list), function(x) {
+    saveRDS(cp_list[x], file = paste0(path, x, "_", template, ".rds"))
+  })
 }

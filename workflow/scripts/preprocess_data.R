@@ -4,9 +4,9 @@ source("workflow/scripts/load_packages.R")
 source("workflow/scripts/functions.R")
 source("workflow/scripts/load_config.R")
 
-input_file <- snakemake@input[["file"]]
+input_file <- snakemake@input[[1]]
 sp_info <- get_species_info(species)
-contrast <- snakemake@params[["input_contrast"]]
+contrast <- snakemake@params[["contrast"]]
 
 preprocessed_data <- input_file %>%
   load_data(
@@ -16,4 +16,4 @@ preprocessed_data <- input_file %>%
   ) %>%
   add_human_ids(sp_info)
 
-saveRDS(list(contrast = preprocessed_data), snakemake@output)
+saveRDS(list(contrast = preprocessed_data), snakemake@output[[1]])

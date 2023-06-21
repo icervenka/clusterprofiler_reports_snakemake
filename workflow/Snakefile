@@ -29,8 +29,8 @@ else:
     templates = ['contrast', 'unique']
 
 include: "rules/preprocess_data.smk"
-# include: "rules/export_analysis_types.smk"
-# include: "rules/cluster_profiler.smk"
+include: "rules/export_analysis_types.smk"
+include: "rules/cluster_profiler.smk"
 # if len(pd.unique(Metadata.contrast)) > 1:
 #     include: "rules/cluster_profiler_multi.smk"
 # else:
@@ -44,8 +44,8 @@ include: "rules/preprocess_data.smk"
 # TODO heatplot scale warning
 rule all:
     input:
-        get_preprocess_data_files
-        # get_cp_output_files,
+        get_preprocess_data_files,
+        get_cp_output_files
         # get_cp_multi_output_files,
         # get_copy_config_files,
         # get_heatmap_files,
