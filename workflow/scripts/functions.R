@@ -764,49 +764,81 @@ create_subpage_markdown <- function(subpage_data,
   return(knitr::knit_child(subpage_markdown, envir = subpage_env))
 }
 
-create_pathway_csv <- function(subpage_data, template, path) {
-  df <- cp_to_df(subpage_data$df)
-  params <- subpage_data$params
+process_df_for_csv_export <- function(cp_data) {
+  rename_lookup <- c("geneID" = "core_enrichment")
+  params <- cp_data$params
+  pathway_df <- cp_to_df(cp_data$df)
+  pathway_df <- pathway_df %>%
+    rename(any_of(rename_lookup)) %>%
+    mutate(across(contains("Ratio"), DOSE::parse_ratio))
 
-  if (class(subpage_data$df) == "gseaResult") {
-    value <- "NES"
-    df <- df %>% dplyr::rename(geneID = "core_enrichment")
-  } else {
-    value <- "GeneRatio"
-  }
-
-  fcs <- get_fcs(subpage_data$df, subpage_data$geneList) %>%
+  fcs <- get_fcs(cp_data$df, cp_data$geneList) %>%
     setNames(c("ENTREZID", "geneID", "log2FoldChange"))
 
-  df <- df %>%
-    dplyr::select(ID, Description, contains(value), pvalue, p.adjust, geneID) %>%
-    tidyr::separate_rows(geneID, sep = "/") %>%
+  export_df <- pathway_df %>%
+    select(
+      ID,
+      Description,
+      any_of(c("NES", "GeneRatio")),
+      pvalue,
+      p.adjust,
+      geneID
+    ) %>%
+    separate_rows(geneID, sep = "/") %>%
     as_tibble() %>%
-    left_join(fcs, by = "geneID") %>%
-    dplyr::rename(SYMBOL = geneID)
-
-  filename <- paste0(
-    gsub(
-      " ",
-      "_",
-      paste(
-        params$type,
-        params$category,
-        params$analysis,
-        params$gene_set
-      )
-    ),
-    "_", template, ".txt"
-  )
-
-  write.table(
-    df,
-    paste0(path, filename),
-    quote = F,
-    sep = "\t",
-    row.names = F
-  )
+    left_join(fcs, by = "geneID", relationship = "many-to-many") %>%
+    rename(SYMBOL = geneID) %>%
+    mutate(
+      type = params$type,
+      category = params$category,
+      analysis = params$analysis,
+      gene_set = params$gene_set
+    )
 }
+
+# create_pathway_csv <- function(subpage_data, template, path) {
+#   df <- cp_to_df(subpage_data$df)
+#   params <- subpage_data$params
+
+#   if (class(subpage_data$df) == "gseaResult") {
+#     value <- "NES"
+#     df <- df %>% dplyr::rename(geneID = "core_enrichment")
+#   } else {
+#     value <- "GeneRatio"
+#   }
+
+#   fcs <- get_fcs(subpage_data$df, subpage_data$geneList) %>%
+#     setNames(c("ENTREZID", "geneID", "log2FoldChange"))
+
+#   df <- df %>%
+#     dplyr::select(ID, Description, contains(value), pvalue, p.adjust, geneID) %>%
+#     tidyr::separate_rows(geneID, sep = "/") %>%
+#     as_tibble() %>%
+#     left_join(fcs, by = "geneID") %>%
+#     dplyr::rename(SYMBOL = geneID)
+
+#   filename <- paste0(
+#     gsub(
+#       " ",
+#       "_",
+#       paste(
+#         params$type,
+#         params$category,
+#         params$analysis,
+#         params$gene_set
+#       )
+#     ),
+#     "_", template, ".txt"
+#   )
+
+#   write.table(
+#     df,
+#     paste0(path, filename),
+#     quote = F,
+#     sep = "\t",
+#     row.names = F
+#   )
+# }
 
 # TODO uses fc to order, might be useful to use custom ordering
 # TODO add knitr options

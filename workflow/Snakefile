@@ -52,7 +52,7 @@ rule all:
         get_preprocess_data_files,
         get_cp_output_files,
         get_reports_output_files,
-        get_csv_output_files
+        get_csv_output_files,
         # get_cp_multi_output_files,
         get_copy_config_files,
         # get_heatmap_files,
