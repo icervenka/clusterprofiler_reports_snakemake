@@ -12,7 +12,7 @@ forceNetwork(
       emap_data$nodes$group,
       add_front = NULL,
       palette = viridis,
-      rev = T
+      rev = TRUE
     )
   ),
   Source = "from_num",
@@ -28,6 +28,6 @@ forceNetwork(
   linkColour = "#C0C0C0",
   charge = -125,
   opacityNoHover = 1,
-  zoom = T
+  zoom = TRUE
 )
 ```

@@ -1,8 +1,8 @@
 `r paste0('# ', subpage_item, '{data-navmenu="', subpage_category, '"}')`
-`r shiny::tags$h2(subpage_heading, style="text-align:left")`
+`r shiny::tags$h2(subpage_heading, style="text-align:left; margin-bottom: 0px; margin-top: 0px")`
 
 ```{r process, include=F}
-tags$head(tags$style(HTML(".small-box {height: 50px}")))
+#tags$head(tags$style(HTML(".small-box {height: 50px}")))
 
 gene_palette <- "RdBu"
 pal_lmh <- colorRampPalette(brewer.pal(n = 9, name = gene_palette))(3)
@@ -10,26 +10,9 @@ pathway_palette <- viridis
 no_colors <- 100
 
 pathway_table <- cp_to_df(subpage_df)
-
-if (class(subpage_df)[1] == "gseaResult") {
-  num_genes <- length(lapply(
-    data.frame(pathway_table)$core_enrichment,
-    strsplit,
-    split = "/"
-  ) %>%
-    unlist() %>%
-    unique())
-  order_by <- "NES"
-} else {
-  num_genes <- length(
-    lapply(data.frame(pathway_table)$geneID, strsplit, split = "/") %>%
-      unlist() %>%
-      unique()
-  )
-  order_by <- "GeneRatio"
-}
-
+num_genes <- length(get_genes(subpage_df))
 num_categories <- nrow(pathway_table)
+
 hide_table_cols <- (match(hide_columns, names(pathway_table)) %>% na.omit()) - 1
 scrolly_dt <- 700
 ```
@@ -38,7 +21,7 @@ Column {data-width=250}
 -----------------------------------------------------------------------
 
 ### Dotplot
-```{r child = 'scripts/subpage_dotplot.Rmd', eval = T}
+```{r child = 'subpage_dotplot.Rmd', eval = T}
 ```
 
 ### Identified pathways
@@ -54,24 +37,24 @@ valueBox(num_genes)
 Column {.tabset .tabset-fade data-width=450}
 -----------------------------------------------------------------------
 ### Network plot
-```{r child = 'scripts/subpage_networkplot.Rmd', eval = T}
+```{r child = 'subpage_networkplot.Rmd', eval = T}
 ```
 
 ### Heatplot/Leading edge analysis
-```{r child = 'scripts/subpage_heatplot.Rmd', eval = T}
+```{r child = 'subpage_heatplot.Rmd', eval = T}
 ```
 
 ### Enrichment map
-```{r child = 'scripts/subpage_emapplot.Rmd', eval = T}
+```{r child = 'subpage_emapplot.Rmd', eval = T}
 ```
 
 Column {data-width=300}
 -----------------------------------------------------------------------
 
 ### Data table
-```{r child = 'scripts/subpage_table.Rmd', eval = T}
+```{r child = 'subpage_table.Rmd', eval = T}
 ```
  
 ### Plot legends
-```{r child = 'scripts/subpage_plotlegends.Rmd', eval = T}
+```{r child = 'subpage_plotlegends.Rmd', eval = T}
 ```

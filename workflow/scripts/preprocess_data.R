@@ -16,4 +16,4 @@ preprocessed_data <- input_file %>%
   ) %>%
   add_human_ids(sp_info)
 
-saveRDS(list(contrast = preprocessed_data), snakemake@output[[1]])
+saveRDS(preprocessed_data, snakemake@output[[1]])

@@ -23,12 +23,11 @@ gse_minGS <- snakemake@config[["gse_minGS"]]
 gse_maxGS <- snakemake@config[["gse_maxGS"]]
 gse_pval_cutoff <- snakemake@config[["gse_pval_cutoff"]]
 
-#templates <- snakemake@config[["templates"]]
 min_set_size <- snakemake@config[["min_set_size"]]
 
-dotplot_categories <- snakemake@config[["dotplot_categories"]]
-networkplot_categories <- snakemake@config[["networkplot_categories"]]
-heatplot_categories <- snakemake@config[["heatplot_categories"]]
-emapplot_categories <- snakemake@config[["emapplot_categories"]]
+dotplot_categories <- snakemake@config[["max_categories"]][["dotplot"]]
+networkplot_categories <- snakemake@config[["max_categories"]][["networkplot"]]
+heatplot_categories <- snakemake@config[["max_categories"]][["heatplot"]]
+emapplot_categories <- snakemake@config[["max_categories"]][["emapplot"]]
 
 hide_columns <- snakemake@config[["hide_columns"]]

@@ -3,7 +3,7 @@
 ```{r}
 valueBox(
   filter_data(
-    data,
+    diffexp_data,
     padj_column = padj_column_name,
     padj_threshold = gene_padj_threshold,
     fc_column = fc_column_name,

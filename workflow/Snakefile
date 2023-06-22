@@ -32,25 +32,29 @@ include: "rules/preprocess_data.smk"
 include: "rules/export_analysis_types.smk"
 include: "rules/cluster_profiler.smk"
 include: "rules/create_reports.smk"
-#include: "rules/create_csvs.smk"
+include: "rules/create_csvs.smk"
 # if len(pd.unique(Metadata.contrast)) > 1:
 #     include: "rules/cluster_profiler_multi.smk"
 # else:
 #     include: "rules/skip_cluster_profiler_multi.smk"
 # include: "rules/create_heatmaps.smk"
-# include: "rules/copy_config.smk"
+include: "rules/copy_config.smk"
 # include: "rules/create_archive.smk"
 
 # TODO clustercompare
 # TODO enrichr libraries https://maayanlab.cloud/Enrichr/#libraries
 # TODO heatplot scale warning
+# TODO venn diagram is broken
+# TODO 4: It looks like Source/Target is not zero-indexed. This is required in JavaScript and so your plot may not render.
+# TODO also breaks figure legend
 rule all:
     input:
         get_preprocess_data_files,
         get_cp_output_files,
-        get_reports_output_files
+        get_reports_output_files,
+        get_csv_output_files
         # get_cp_multi_output_files,
-        # get_copy_config_files,
+        get_copy_config_files,
         # get_heatmap_files,
         # get_archive_output_files
         

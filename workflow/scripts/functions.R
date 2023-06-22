@@ -135,9 +135,11 @@ add_human_ids <- function(ids, species) {
 
 cp_to_df <- function(cp) {
   if (class(cp) == "gseaResult") {
-    df <- data.frame(cp)[1:nrow(data.frame(cp)), ]
+    df <- cp@result
+    # df <- data.frame(cp)[seq_len(nrow(data.frame(cp))), ]
   } else {
-    df <- fortify(cp, showCategory = nrow(data.frame(cp)))
+    df <- cp@result
+    # df <- fortify(cp, showCategory = nrow(data.frame(cp)))
   }
   return(df)
 }
@@ -505,8 +507,8 @@ default_dt <- function(x, opts = NULL) {
 
   DT::datatable(
     x,
-    rownames = T,
-    escape = F,
+    rownames = TRUE,
+    escape = FALSE,
     filter = "top",
     extensions = c("Buttons", "Scroller"),
     style = "bootstrap",
@@ -668,8 +670,6 @@ get_unique_expr_data <- function(data_list,
 create_subpage_data <- function(expr_data, sp_info, params) {
   if (params$type %in% c("Disease", "ConsensusPathDB") &&
     sp_info["common"] != "human") {
-    expr_data <- expr_data %>%
-      add_human_ids(sp_info)
     select_entrez_id <- "ENTREZID_HUMAN"
   } else {
     select_entrez_id <- "ENTREZID"
@@ -711,7 +711,7 @@ create_subpage_data <- function(expr_data, sp_info, params) {
     }
   )
 
-  if (nrow(data.frame(df)) == 0 | is.null(df)) {
+  if (nrow(data.frame(df)) == 0 || is.null(df)) {
     return(NULL)
   }
 
@@ -728,7 +728,7 @@ create_subpage_data <- function(expr_data, sp_info, params) {
 }
 
 create_subpage_markdown <- function(subpage_data,
-                                    subpage_markdown = "scripts/subpage.Rmd") {
+                                    subpage_markdown = "subpage.Rmd") {
   # Create temporary environment which we use for knitting subpages.RMD
   subpage_env <- new.env()
 
@@ -836,4 +836,27 @@ export_cp <- function(cp_list, path, template) {
   walk(names(cp_list), function(x) {
     saveRDS(cp_list[x], file = paste0(path, x, "_", template, ".rds"))
   })
+}
+
+render_reports <- function(
+    cp_data, diffexp_data, all_data, sp_info, contrast, output_dir,
+     output_filename, cp_script_path, output_opts = list()) {
+
+  if (grepl("_contrast", output_filename)) {
+    template <- "contrast"
+    set_overview <- FALSE
+  } else if (grepl("_unique", output_filename)) {
+    template <- "unique"
+    set_overview <- TRUE
+  }
+
+  analysis_type <- names(cp_data)[1]
+  cp_data <- cp_data[[1]]
+
+  render(cp_script_path,
+    output_file = output_filename,
+    output_format = "all",
+    output_dir = paste0(output_dir, contrast),
+    output_options = output_opts
+  )
 }

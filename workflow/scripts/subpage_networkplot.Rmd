@@ -19,7 +19,7 @@ forceNetwork(
       gene_node_type,
       palette = gene_palette,
       no_colors = no_colors,
-      rev = T
+      rev = TRUE
     )
   ),
   Source = "from_num",
@@ -33,6 +33,6 @@ forceNetwork(
   linkColour = "#808080",
   charge = -125,
   opacityNoHover = 1,
-  zoom = T
+  zoom = TRUE
 )
 ```

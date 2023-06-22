@@ -13,6 +13,6 @@ rule cp:
         contrast=lambda wc: wc.get("contrast"),
         rds_outdir=RDS_OUTDIR
     conda:
-        "../envs/clusterprofiler_reports.yml"
+        "../envs/clusterprofiler_reports.yaml"
     script:
-        "../scripts/cp.R"
+        "../scripts/cluster_profiler.R"

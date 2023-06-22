@@ -1,5 +1,5 @@
 ---
-title: "`r paste0(payloads_sub$type[1], ' - ', stringr::str_trunc(outdir, 25))`"
+title: "`r paste0(analysis_type, ' - ', stringr::str_trunc(contrast, 25))`"
 output:
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -10,20 +10,10 @@ output:
 ```{r setup, include=FALSE, cache=FALSE}
 # Set knitr options to allow duplicate labels (needed for the subpages)
 options(knitr.duplicate.label = "allow")
-#knitr::opts_knit$set(root.dir = normalizePath(".."))
 scrolly_dt <- 800
 ```
 
-```{r prepare_data}
-if (template == "contrast") {
-  set_overview <- FALSE
-} else {
-  input_contrast <- outdir
-  set_overview <- TRUE
-}
-```
-
-```{r css, echo=FALSE, results='asis', eval = T}
+```{r css, echo=FALSE, results='asis', eval = F}
 # fix for datatable height in flexdashboard
 cat(glue(.open = "<<", .close = ">>", "
 <style>
@@ -40,42 +30,40 @@ cat(glue(.open = "<<", .close = ">>", "
 Column {.tabset .tabset-fade data-width=225}
 -----------------------------------------------------------------------
 
-```{r child = 'scripts/description.Rmd', eval = T}
+```{r child = 'description.Rmd', eval = T}
 ```
 
 Column {data-width=275}
 -----------------------------------------------------------------------
 
-```{r child = 'scripts/volcano.Rmd', eval = T}
+```{r child = 'volcano.Rmd', eval = T}
 ```
 
 <!-- conditional evaluation of graph based on whether it's set or contrast -->
-```{r child = 'scripts/venn.Rmd', eval = !set_overview}
-```
-
-```{r child = 'scripts/venn.Rmd', eval = set_overview}
+```{r child = 'venn.Rmd', eval = set_overview}
 ```
 
 Column {data-width=150}
 -----------------------------------------------------------------------
 
-```{r child = 'scripts/valuebox_info.Rmd', eval = T}
+```{r child = 'valuebox_info.Rmd', eval = T}
 ```
 
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-```{r child = 'scripts/gene_expr_table.Rmd', eval = T}
+```{r child = 'gene_expr_table.Rmd', eval = T}
 ```
 
 <!-- render subpages with pathway data -->
 ```{r include = F, eval = T}
 out <- map_if(
-  subpage_data,
+  cp_data,
   is.not.empty.list,
   ~ create_subpage_markdown(.x),
   .else = ""
 )
 ```
 
+<!-- gives NULL at the end of html page -->
 `r paste(knitr::knit_child(text = out), collapse = '')`

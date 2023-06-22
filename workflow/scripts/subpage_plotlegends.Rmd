@@ -1,17 +1,24 @@
 ```{r fig.width=10, fig.height=1, out.height="100%"}
 cowplot::plot_grid(
+  # create_legend(
+  #   network_data$nodes %>% dplyr::filter(group != "process") %>% pull(value),
+  #   gene_palette,
+  #   no_colors,
+  #   rev = TRUE
+  # ),
   create_legend(
-    network_data$nodes %>% dplyr::filter(group != "process") %>% pull(value),
-    gene_palette,
+    emap_data$nodes %>% pull(p.adjust),
+    pathway_palette,
     no_colors,
-    rev = T
+    symmetric = FALSE,
+    rev = TRUE
   ),
   create_legend(
     emap_data$nodes %>% pull(p.adjust),
     pathway_palette,
     no_colors,
-    symmetric = F,
-    rev = T
+    symmetric = FALSE,
+    rev = TRUE
   ),
   labels = c("   Gene expression (log2 fold-change)", "   Pathway p-value"),
   label_size = 12,
