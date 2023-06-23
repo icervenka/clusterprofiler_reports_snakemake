@@ -16,7 +16,7 @@ input_contrast <- snakemake@params[["contrast"]]
 rds_outdir <- snakemake@params[["rds_outdir"]]
 
 # load data and metadata -------------------------------------------------------
-diffexp_data <- readRDS(input_file)[[1]]
+diffexp_data <- readRDS(input_file)
 meta <- read.table(metadata, header = TRUE, stringsAsFactors = FALSE)
 
 # knitr_output_options <- list(
@@ -31,7 +31,6 @@ payloads <- merge(
   read.csv(input_type, stringsAsFactors = FALSE),
   template_to_df(get_template(template))
 )
-
 cp_data_contrast <- run_cp(
   diffexp_data,
   get_species_info(species),

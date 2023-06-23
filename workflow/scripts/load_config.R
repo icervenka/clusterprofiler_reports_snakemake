@@ -1,5 +1,6 @@
 cp_script_path <- "workflow/scripts/create_reports.Rmd"
 
+
 # snakemake common parameters --------------------------------------------------
 rmarkdown::find_pandoc(dir = snakemake@config[["pandoc_path"]])
 
@@ -31,3 +32,5 @@ heatplot_categories <- snakemake@config[["max_categories"]][["heatplot"]]
 emapplot_categories <- snakemake@config[["max_categories"]][["emapplot"]]
 
 hide_columns <- snakemake@config[["hide_columns"]]
+
+heatmaps <- snakemake@config[["heatmaps"]]

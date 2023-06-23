@@ -1,2 +1,2 @@
-contrast	file
-ko_wt_ga	ko_ga_vs_wt_ga_all.txt
+contrast	file	sample_expression	sample_sheet	group_order
+ko_wt_ga	ko_ga_vs_wt_ga_all.txt	ko_wt_ga_sample_expression.txt	ko_wt_ga_sample_sheet.txt	wt_ga,ko_ga

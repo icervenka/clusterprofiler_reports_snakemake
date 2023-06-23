@@ -152,7 +152,7 @@ get_fcs <- function(cp, geneList) {
     data.frame(
       ENTREZID = names(geneList),
       log2FoldChange = geneList,
-      stringsAsFactors = F
+      stringsAsFactors = FALSE
     ),
     by = "ENTREZID"
   )
@@ -282,6 +282,22 @@ get_mesh_dbi <- function(species) {
   ah_query <- query(ah, c("MeSHDb", species[["full_name"]]))
   db <- MeSHDbi::MeSHDb(ah_query[[1]])
   return(db)
+}
+
+is_human_analysis <- function(x) {
+  if (x %in% c("Disease", "ConsensusPathDB")) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
+
+is_human <- function(x) {
+  if (x["full_name"] == "Homo Sapiens") return(TRUE)
+  if (x["abbreviation"] == "hsapiens") return(TRUE)
+  if (x["genus"] == "Homo") return(TRUE)
+  if (x["common"] == "human") return(TRUE)
+  return(FALSE)
 }
 
 # graph functions  -------------------------------------------------------------
@@ -668,8 +684,7 @@ get_unique_expr_data <- function(data_list,
 
 # main clusterProfiler functions  ----------------------------------------------
 create_subpage_data <- function(expr_data, sp_info, params) {
-  if (params$type %in% c("Disease", "ConsensusPathDB") &&
-    sp_info["common"] != "human") {
+  if (is_human_analysis(params$type) && !is_human(sp_info)) {
     select_entrez_id <- "ENTREZID_HUMAN"
   } else {
     select_entrez_id <- "ENTREZID"
@@ -764,85 +779,7 @@ create_subpage_markdown <- function(subpage_data,
   return(knitr::knit_child(subpage_markdown, envir = subpage_env))
 }
 
-process_df_for_csv_export <- function(cp_data) {
-  rename_lookup <- c("geneID" = "core_enrichment")
-  params <- cp_data$params
-  pathway_df <- cp_to_df(cp_data$df)
-  pathway_df <- pathway_df %>%
-    rename(any_of(rename_lookup)) %>%
-    mutate(across(contains("Ratio"), DOSE::parse_ratio))
-
-  fcs <- get_fcs(cp_data$df, cp_data$geneList) %>%
-    setNames(c("ENTREZID", "geneID", "log2FoldChange"))
-
-  export_df <- pathway_df %>%
-    select(
-      ID,
-      Description,
-      any_of(c("NES", "GeneRatio")),
-      pvalue,
-      p.adjust,
-      geneID
-    ) %>%
-    separate_rows(geneID, sep = "/") %>%
-    as_tibble() %>%
-    left_join(fcs, by = "geneID", relationship = "many-to-many") %>%
-    rename(SYMBOL = geneID) %>%
-    mutate(
-      type = params$type,
-      category = params$category,
-      analysis = params$analysis,
-      gene_set = params$gene_set
-    )
-}
-
-# create_pathway_csv <- function(subpage_data, template, path) {
-#   df <- cp_to_df(subpage_data$df)
-#   params <- subpage_data$params
-
-#   if (class(subpage_data$df) == "gseaResult") {
-#     value <- "NES"
-#     df <- df %>% dplyr::rename(geneID = "core_enrichment")
-#   } else {
-#     value <- "GeneRatio"
-#   }
-
-#   fcs <- get_fcs(subpage_data$df, subpage_data$geneList) %>%
-#     setNames(c("ENTREZID", "geneID", "log2FoldChange"))
-
-#   df <- df %>%
-#     dplyr::select(ID, Description, contains(value), pvalue, p.adjust, geneID) %>%
-#     tidyr::separate_rows(geneID, sep = "/") %>%
-#     as_tibble() %>%
-#     left_join(fcs, by = "geneID") %>%
-#     dplyr::rename(SYMBOL = geneID)
-
-#   filename <- paste0(
-#     gsub(
-#       " ",
-#       "_",
-#       paste(
-#         params$type,
-#         params$category,
-#         params$analysis,
-#         params$gene_set
-#       )
-#     ),
-#     "_", template, ".txt"
-#   )
-
-#   write.table(
-#     df,
-#     paste0(path, filename),
-#     quote = F,
-#     sep = "\t",
-#     row.names = F
-#   )
-# }
-
 # TODO uses fc to order, might be useful to use custom ordering
-# TODO add knitr options
-# TODO pass correctly cp_script_path to function
 run_cp <- function(data, sp_info, payloads) {
   map(payloads$type %>% unique(), function(x, data, sp_info) {
     payloads_sub <- payloads %>% dplyr::filter(type == x)
@@ -891,4 +828,36 @@ render_reports <- function(
     output_dir = paste0(output_dir, contrast),
     output_options = output_opts
   )
+}
+
+process_df_for_csv_export <- function(cp_data) {
+  rename_lookup <- c("geneID" = "core_enrichment")
+  params <- cp_data$params
+  pathway_df <- cp_to_df(cp_data$df)
+  pathway_df <- pathway_df %>%
+    rename(any_of(rename_lookup)) %>%
+    mutate(across(contains("Ratio"), DOSE::parse_ratio))
+
+  fcs <- get_fcs(cp_data$df, cp_data$geneList) %>%
+    setNames(c("ENTREZID", "geneID", "log2FoldChange"))
+
+  export_df <- pathway_df %>%
+    select(
+      ID,
+      Description,
+      any_of(c("NES", "GeneRatio")),
+      pvalue,
+      p.adjust,
+      geneID
+    ) %>%
+    separate_rows(geneID, sep = "/") %>%
+    as_tibble() %>%
+    left_join(fcs, by = "geneID", relationship = "one-to-many") %>%
+    rename(SYMBOL = geneID) %>%
+    mutate(
+      type = params$type,
+      category = params$category,
+      analysis = params$analysis,
+      gene_set = params$gene_set
+    )
 }
