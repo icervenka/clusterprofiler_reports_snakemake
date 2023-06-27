@@ -10,12 +10,17 @@ output_filename <- paste0(
   tools::file_path_sans_ext(basename(cp_data_filename)),
   ".html")
 
-
 diffexp_data <- readRDS(snakemake@input[["diffexp_data"]])
 all_data <- readRDS(snakemake@input[["all_data"]])
 contrast <- snakemake@params[["contrast"]]
 report_outdir <- snakemake@params[["report_outdir"]]
 sp_info <- get_species_info(species)
+
+knitr_output_options <- list(
+  mathjax = NULL,
+  self_contained = self_contained,
+  lib_dir = paste0("../../", report_outdir, contrast, "/_libs")
+)
 
 render_reports(
   cp_data,
@@ -25,5 +30,6 @@ render_reports(
   contrast,
   report_outdir,
   output_filename,
-  cp_script_path
+  cp_script_path,
+  knitr_output_options
 )

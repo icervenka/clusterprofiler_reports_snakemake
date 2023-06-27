@@ -3,7 +3,7 @@
 ```{r}
 table_expr_data <- diffexp_data
 
-if ((analysis_type %in% c("Disease", "ConsensusPathDB")) && (sp_info["common"] != "human")) {
+if (is_human_analysis(analysis_type) && !is_human(sp_info)) {
   select_symbol <- "SYMBOL_HUMAN"
 } else {
   select_symbol <- "SYMBOL"

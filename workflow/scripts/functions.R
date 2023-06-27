@@ -801,9 +801,9 @@ run_cp <- function(data, sp_info, payloads) {
   setNames(payloads$type %>% unique())
 }
 
-export_cp <- function(cp_list, path, template) {
+export_cp <- function(cp_list, path) {
   walk(names(cp_list), function(x) {
-    saveRDS(cp_list[x], file = paste0(path, x, "_", template, ".rds"))
+    saveRDS(cp_list[x], file = path)
   })
 }
 

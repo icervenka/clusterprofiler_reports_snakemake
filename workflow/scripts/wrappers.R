@@ -178,7 +178,7 @@ gseaGO_wrapper <- function(list, category, species) {
 }
 
 enrichMSIG_wrapper <- function(list, category, species) {
-  category_split <- unlist(strsplit(category, "@", fixed = T))
+  category_split <- unlist(strsplit(category, "@", fixed = TRUE))
   if (length(category_split) == 2) {
     subcategory <- category_split[2]
   } else {
@@ -203,7 +203,7 @@ enrichMSIG_wrapper <- function(list, category, species) {
 }
 
 gseaMSIG_wrapper <- function(list, category, species) {
-  category_split <- unlist(strsplit(category, "@", fixed = T))
+  category_split <- unlist(strsplit(category, "@", fixed = TRUE))
   if (length(category_split) == 2) {
     subcategory <- category_split[2]
   } else {
@@ -226,7 +226,7 @@ gseaMSIG_wrapper <- function(list, category, species) {
 }
 
 enrichMESH_wrapper <- function(list, category, species) {
-  category_split <- unlist(strsplit(category, "@", fixed = T))
+  category_split <- unlist(strsplit(category, "@", fixed = TRUE))
   df <- enrichMeSH(
     names(list),
     MeSHDb = get_mesh_dbi(species),
@@ -240,7 +240,7 @@ enrichMESH_wrapper <- function(list, category, species) {
 }
 
 gseaMESH_wrapper <- function(list, category, species) {
-  category_split <- unlist(strsplit(category, "@", fixed = T))
+  category_split <- unlist(strsplit(category, "@", fixed = TRUE))
   df <- gseMeSH(
     list,
     MeSHDb = get_mesh_dbi(species),
@@ -277,33 +277,8 @@ enrichPathways_wrapper <- function(list, category, species) {
   }
 
   enrichWiki_wrapper <- function(list, category, species) {
-
-
-    # wiki_archive <- downloadPathwayArchive(
-    #   organism = species[["full_name"]],
-    #   format = "gmt"
-    # )
-    # wp2gene <- read.gmt(wiki_archive)
-    # if (file.exists(wiki_archive)) {
-    #   file.remove(wiki_archive)
-    # }
-    # wp2gene <- wp2gene %>%
-    #   tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
-    # wpid2gene <- wp2gene %>% dplyr::select(wpid, gene) # TERM2GENE
-    # wpid2name <- wp2gene %>% dplyr::select(wpid, name) # TERM2NAME
-
-    # df <- enricher(
-    #   names(list),
-    #   TERM2GENE = wpid2gene,
-    #   TERM2NAME = wpid2name,
-    #   pvalueCutoff = enrich_pval_cutoff,
-    #   pAdjustMethod = "BH",
-    #   minGSSize = enrich_minGS,
-    #   maxGSSize = enrich_maxGS
-    # )
-    
     df <- enrichWP(
-      names(list), 
+      names(list),
       organism = species[["full_name"]],
       pvalueCutoff = enrich_pval_cutoff,
       pAdjustMethod = "BH",
@@ -367,28 +342,6 @@ gseaPathways_wrapper <- function(list, category, species) {
   }
 
   gseaWiki_wrapper <- function(list, category, species) {
-    # wiki_archive <- downloadPathwayArchive(
-    #   organism = species["full_name"],
-    #   format = "gmt"
-    # )
-    # wp2gene <- read.gmt(wiki_archive)
-    # if (file.exists(wiki_archive)) {
-    #   file.remove(wiki_archive)
-    # }
-    # wp2gene <- wp2gene %>% 
-    #   tidyr::separate(term, c("name", "version", "wpid", "org"), "%")
-    # wpid2gene <- wp2gene %>% dplyr::select(wpid, gene) # TERM2GENE
-    # wpid2name <- wp2gene %>% dplyr::select(wpid, name) # TERM2NAME
-    # 
-    # df <- GSEA(
-    #   list,
-    #   TERM2GENE = wpid2gene,
-    #   TERM2NAME = wpid2name,
-    #   pvalueCutoff = gse_pval_cutoff,
-    #   minGSSize = gse_minGS,
-    #   maxGSSize = gse_maxGS
-    # )
-    
     df <- gseWP(
       list,
       organism = species[["full_name"]],
