@@ -1,3 +1,8 @@
+# general use functions --------------------------------------------------------
+def get_outfile_string(outdir, template, suffix):
+    return outdir + "{contrast}/{type}" + "_" + template + suffix
+
+# output functions -------------------------------------------------------------
 def get_cp_unique_output(wildcards):
     return expand(get_outfile_string(RDS_OUTDIR, templates["unique"], ".rds"),
         contrast = Metadata.contrast, type = types)
@@ -12,8 +17,10 @@ def get_cp_unique_csv_output(wildcards):
         expand(get_outfile_string(CSV_OUTDIR, templates["unique"], "_GSEA.txt"),
         contrast = Metadata.contrast, type = types)
 
-def get_outfile_string(outdir, template, suffix):
-    return outdir + "{contrast}/{type}" + "_" + template + suffix
+def get_cp_set_output(wildcards):
+    return expand(LOG_DIR + "{type}.done", type = types)
+
+# rules for unique genes in contrast -------------------------------------------
 
 rule cp_unique:
     input:
@@ -22,7 +29,6 @@ rule cp_unique:
         type=TYPES_DIR + "{type}.csv"
     output:
         get_outfile_string(RDS_OUTDIR, templates["unique"], ".rds")
-        #RDS_OUTDIR + "{contrast}/{type}" + "_" + templates["unique"] + ".rds"
     params:
         contrast=lambda wc: wc.get("contrast"),
         template=templates["unique"],
@@ -39,7 +45,6 @@ rule cp_unique_report:
         all_data=rules.collate_data.output
     output:
         get_outfile_string(REPORT_OUTDIR, templates["unique"], ".html")
-        # REPORT_OUTDIR + "{contrast}/{type}" + "_" + templates["unique"] + ".html"
     params:
         contrast=lambda wc: wc.get("contrast"),
         template=templates["unique"],
@@ -55,9 +60,36 @@ rule cp_unique_csv:
     output:
         ora=get_outfile_string(CSV_OUTDIR, templates["unique"], "_ORA.txt"),
         gsea=get_outfile_string(CSV_OUTDIR, templates["unique"], "_GSEA.txt"),
-        # ora=CSV_OUTDIR + "{contrast}/{type}" + "_" + templates["unique"] + "_ORA.txt",
-        # gsea=CSV_OUTDIR + "{contrast}/{type}" + "_" + templates["unique"] + "_GSEA.txt"
     conda:
         "../envs/clusterprofiler_reports.yaml"
     script:
         "../scripts/create_csvs.R"
+
+# rules for set combinations ---------------------------------------------------
+rule cp_set:
+    input:
+        all_data=rules.collate_data.output,
+        type=TYPES_DIR + "{type}.csv"
+    output:
+        LOG_DIR + "{type}.done"
+    params:
+        type=lambda wc: wc.get("type"),
+        template=templates["set"],
+        rds_outdir=RDS_OUTDIR,
+        log_dir=LOG_DIR
+    script:
+        "../scripts/cluster_profiler_sets.R"
+
+# rule: cp_set_report:
+#     input:
+#         aggregate_cp_set_input
+#     output:
+#          REPORT_OUTDIR + "{set_contrast}/{type}.html"
+#     params:
+#         contrast=lambda wc: wc.get("set_contrast"),
+#         template=templates["all"],
+#         report_outdir=REPORT_OUTDIR
+#     conda:
+#         "../envs/clusterprofiler_reports.yaml"
+#     script:
+#         "../scripts/create_reports.R"

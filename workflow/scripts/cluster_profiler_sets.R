@@ -9,17 +9,18 @@ source("workflow/scripts/load_config.R")
 source("workflow/scripts/load_extradb.R")
 
 # snakemake inputs and params --------------------------------------------------
-input_file <- snakemake@input[["file"]]
+
 input_type <- snakemake@input[["type"]]
+all_data <- readRDS(snakemake@input[["all_data"]])
 
 output_file <- snakemake@output[[1]]
 
-input_contrast <- snakemake@params[["contrast"]]
 template <- snakemake@params[["template"]]
+param_type <- snakemake@params[["type"]]
 rds_outdir <- snakemake@params[["rds_outdir"]]
+log_dir <- snakemake@params[["log_dir"]]
 
 # load data and metadata -------------------------------------------------------
-diffexp_data <- readRDS(input_file)
 meta <- read.table(metadata, header = TRUE, stringsAsFactors = FALSE)
 
 payloads <- merge(
@@ -28,24 +29,34 @@ payloads <- merge(
 )
 
 # run analysis -----------------------------------------------------------------
-if (template == "all") {
-  selected_data <- diffexp_data
-} else if (template == "unique") {
-  all_data <- readRDS(snakemake@input[["all_data"]])
-  selected_data <- get_unique_expr_data(
+upset_sets <- get_upset_sets(all_data, min_set_size = 1)
+
+selected_data <- map(upset_sets$set_name, function(x) {
+  result <- get_unique_expr_data(
     all_data,
-    input_contrast,
+    x,
     min_set_size = min_set_size
   )
-} else {
-  stop("Incorrect template selected.")
-}
+}) %>%
+  setNames(upset_sets$set_name)
+print(selected_data)
 
-run_cp(
-  selected_data,
-  get_species_info(species),
-  payloads
-) %>%
-  export_cp(
-    output_file
+walk(names(selected_data), function(x) {
+  print(x)
+  dir.create(paste0(rds_outdir, x), showWarnings = FALSE)
+  if (nrow(selected_data[[x]]) > 0) {
+  run_cp(
+    x,
+    get_species_info(species),
+    payloads
+  ) %>%
+    export_cp(
+      paste0(rds_outdir, x, "/", input_type)
+    )
+  }
+  write.table(
+    data.frame(),
+    file = paste0(log_dir, param_type, ".done"),
+    col.names = FALSE
   )
+})

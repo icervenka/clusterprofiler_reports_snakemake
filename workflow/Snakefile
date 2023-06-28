@@ -51,6 +51,7 @@ rule all:
         get_cp_unique_output,
         get_cp_unique_csv_output,
         get_cp_unique_report_output,
+        get_cp_set_output
         # get_copy_config_files,
         # get_heatmap_output_files,
         # get_archive_output_files

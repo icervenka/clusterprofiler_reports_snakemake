@@ -643,7 +643,7 @@ get_upset_sets <- function(data_list,
       set_name = usets_name,
       comb_size = comb_size(m)[usets] %>% unname(),
       comb_degree = comb_degree(m)[usets] %>% unname(),
-      stringsAsFactors = F
+      stringsAsFactors = FALSE
     )
   )
 }
