@@ -40,7 +40,7 @@ Column {data-width=275}
 ```
 
 <!-- conditional evaluation of graph based on whether it's set or contrast -->
-```{r child = 'venn.Rmd', eval = set_overview}
+```{r child = 'venn.Rmd', eval = F}
 ```
 
 Column {data-width=150}

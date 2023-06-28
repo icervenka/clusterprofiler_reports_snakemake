@@ -12,8 +12,17 @@ rule preprocess_data:
         "../scripts/preprocess_data.R"
 
 rule collate_data:
+    # I needed a named input to insert the contrast names as names of the 
+    # resulting processed list
     input:
-        expand(rules.preprocess_data.output, contrast=pd.unique(Metadata.contrast))
+        **(dict(
+            zip(
+                pd.unique(Metadata.contrast), 
+                expand(rules.preprocess_data.output, 
+                    contrast=pd.unique(Metadata.contrast))
+                )
+            )
+        )
     output:
         RDS_OUTDIR + "input/all_data.rds"
     script:

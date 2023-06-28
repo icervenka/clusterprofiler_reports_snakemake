@@ -183,7 +183,7 @@ preserve_order_as_factor <- function(data, cols) {
 # analysis options -------------------------------------------------------------
 get_template <- function(x) {
   templates <- list(
-    "contrast" = list(
+    "all" = list(
       "analyses" = c("ORA", "GSEA"),
       "ORA_gene_sets" = c("all", "up", "down"),
       "GSEA_gene_sets" = c("all")
@@ -192,7 +192,7 @@ get_template <- function(x) {
       "analyses" = c("ORA"),
       "ORA_gene_sets" = c("all", "up", "down")
     ),
-    "multi" = list(
+    "set" = list(
       "analyses" = c("ORA"),
       "ORA_gene_sets" = c("all")
     )
@@ -648,12 +648,51 @@ get_upset_sets <- function(data_list,
   )
 }
 
+# get_unique_expr_data <- function(data_list,
+#                                  contrast,
+#                                  min_set_size = 50,
+#                                  id_type = "ENTREZID",
+#                                  set_sep = "__int__") {
+#   m <- get_upset_list(data_list, id_type = id_type) %>%
+#     make_comb_mat()
+
+#   sn <- set_contrast_to_comb_string(contrast, m, set_sep)
+#   gene_ids <- extract_comb(m, sn)
+
+#   if (length(gene_ids) >= min_set_size) {
+#     if (comb_string_to_degree(sn) == 1) {
+#       df <- data_list[[contrast]] %>%
+#         dplyr::filter(!!as.symbol(id_type) %in% gene_ids)
+#       return(df)
+#     } else {
+#       split_contrast <- strsplit(contrast, set_sep) %>% unlist()
+#       # TODO make nicer
+#       df <- dplyr::bind_rows(data_list[split_contrast]) %>%
+#         dplyr::filter(!!as.symbol(id_type) %in% gene_ids) %>%
+#         dplyr::group_by(ENTREZID, ENSEMBL, SYMBOL, GENENAME) %>%
+#         dplyr::summarise(
+#           across(everything(), ~ mean(.x, na.rm = TRUE)),
+#           .groups = "drop"
+#         ) %>%
+#         as.data.frame(stringsAsFactors = FALSE)
+#       return(df)
+#     }
+#   } else {
+#     return(data_list[[1]][FALSE, ])
+#   }
+# }
+
 get_unique_expr_data <- function(data_list,
                                  contrast,
                                  min_set_size = 50,
                                  id_type = "ENTREZID",
-                                 set_sep = "__int__") {
-  m <- get_upset_list(data_list, id_type = id_type) %>%
+                                 set_sep = "__int__",
+                                 ...) {
+  m <- get_upset_list(
+    data_list,
+    id_type = id_type,
+    ...
+  ) %>%
     make_comb_mat()
 
   sn <- set_contrast_to_comb_string(contrast, m, set_sep)
@@ -662,18 +701,16 @@ get_unique_expr_data <- function(data_list,
   if (length(gene_ids) >= min_set_size) {
     if (comb_string_to_degree(sn) == 1) {
       df <- data_list[[contrast]] %>%
-        dplyr::filter(!!as.symbol(id_type) %in% gene_ids)
+        filter(!!as.symbol(id_type) %in% gene_ids)
       return(df)
     } else {
       split_contrast <- strsplit(contrast, set_sep) %>% unlist()
       # TODO make nicer
-      df <- dplyr::bind_rows(data_list[split_contrast]) %>%
-        dplyr::filter(!!as.symbol(id_type) %in% gene_ids) %>%
-        dplyr::group_by(ENTREZID, ENSEMBL, SYMBOL, GENENAME) %>%
-        dplyr::summarise(
-          across(everything(), ~ mean(.x, na.rm = TRUE)),
-          .groups = "drop"
-        ) %>%
+      df <- bind_rows(data_list[split_contrast]) %>%
+        filter(!!as.symbol(id_type) %in% gene_ids) %>%
+        slice_head(n = 1, by = across(
+          any_of(c("ENTREZID", "ENSEMBL", "SYMBOL", "GENENAME"))
+        )) %>%
         as.data.frame(stringsAsFactors = FALSE)
       return(df)
     }
@@ -808,24 +845,26 @@ export_cp <- function(cp_list, path) {
 }
 
 render_reports <- function(
-    cp_data, diffexp_data, all_data, sp_info, contrast, output_dir,
+    cp_data, diffexp_data, all_data, sp_info, contrast, template, output_dir,
      output_filename, cp_script_path, output_opts = list()) {
 
-  if (grepl("_contrast", output_filename)) {
-    template <- "contrast"
+  if (template == "all") {
     set_overview <- FALSE
-  } else if (grepl("_unique", output_filename)) {
-    template <- "unique"
+  } else if (template == "unique") {
     set_overview <- TRUE
   }
 
   analysis_type <- names(cp_data)[1]
   cp_data <- cp_data[[1]]
 
+  print(getwd())
+  print("cp_report_1")
+
   render(cp_script_path,
-    output_file = output_filename,
     output_format = "all",
-    output_dir = paste0(output_dir, contrast),
+    output_file = output_filename,
+    
+    output_dir = paste0("results/reports/", contrast),
     output_options = output_opts
   )
 }

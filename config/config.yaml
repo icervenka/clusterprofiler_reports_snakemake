@@ -8,6 +8,13 @@ metadata: "config/metadata.tsv"
 species: "mouse"
 create_archive: "yes"
 
+# Whether clusterProfiler should be run on unique and common genes between the
+# specified lists of differentially expressed genes.
+# When doing more complicated comparisons between groups, this should be ideally
+# reflected in your design for analysis of differential gene expression. 
+# When that is not possible, set analysis could be used instead.
+set_analysis: TRUE
+
 # should the html output be self contained or have a separate lib directory
 # separate lib directory saves space, but individual html files can't be shared
 self_contained: FALSE
@@ -16,14 +23,7 @@ self_contained: FALSE
 # Disease, GeneOntology, MSigDB, MSigDB_cancer, MeSH_g2p, MeSH_gendoo,
 # Pathways, ConsensusPathDB
 types:
-  - "Disease"
-  - "GeneOntology"
-  - "MSigDB"
-  - "MSigDB_cancer"
-  - "MeSH_g2p"
-  - "MeSH_gendoo"
   - "Pathways"
-  - "ConsensusPathDB"
 
 # name of the gene ID column in the deg file
 id_column_name: "ENSEMBL"
@@ -60,7 +60,28 @@ max_categories:
   heatplot: 20
   enrichmap: 35
 
-
 # hide columns from clusterProfiler table output
 table:
   hide_columns: ["BgRatio", "qvalue", "qvalues", "leading_edge"]
+
+# which analysis include or exclude when creating heatmaps
+# include and exclude categories are exclusive
+# if left empty, heatmaps for all pathways will be created
+heatmaps:
+  # list of text files with pathway ids to generate heatmaps for (one ID per line)
+  # if specified overrides all subsequent include/exclude settings
+  pathway_id_files: []
+  # specified in 'types'
+  type:
+    include: []
+    exclude: []
+  # list of available categories, see 'workflow/scripts/export_analysis_types.R'
+  # for more details
+  category:
+    include: []
+    exclude: []
+  # 'ORA' of 'GSEA' or both
+  analysis: []
+
+
+  
